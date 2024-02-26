@@ -1,4 +1,4 @@
-package messager;
+package messenger;
 
 import static org.junit.Assert.assertTrue;
 
