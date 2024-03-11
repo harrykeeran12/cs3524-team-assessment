@@ -7,12 +7,14 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Scanner;
 
+/** This is the client class, which takes a string, the host and the port, and tries to connect, to send messages. **/
 public class Client {
 
     private Socket socket;
     private String host;
     private int port;
 
+    /** This is the constructor for the client. */
     public Client(String host, int port) {
         this.host = host;
         this.port = port;
@@ -45,11 +47,12 @@ public class Client {
             ObjectInputStream inputStreamFromMessenger = this.getStreamFromMessenger();
             Scanner input = new Scanner(System.in);
             while (true) {
-                System.out.println("Write your message here: ");
+                System.out.println("[CLIENT] Write your message here: ");
                 String message = input.nextLine();
                 outputStreamToMessenger.writeObject(message);
+                /** The case where the client disconnects. **/
                 if (message.equalsIgnoreCase("exit")) {
-                    System.out.println("Client disconnecting...");
+                    System.out.println("Client disconnecting..");
                     input.close();
                     socket.close();
                     break;

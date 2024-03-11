@@ -40,6 +40,7 @@ public class MessengerHandler implements Runnable {
     /** Registers a new user, and broadcasts the name to everyone. **/
     public void registerUser() throws IOException, ClassNotFoundException {
         try {
+            this.streamToClient.writeObject("Please enter a username.");
             this.username = (String) this.streamFromClient.readObject();
         } catch (IOException e) {
             System.out.println("User " + this.username + "failed to register.");
@@ -53,6 +54,11 @@ public class MessengerHandler implements Runnable {
      */
     public String getClientName() {
         return this.username;
+    }
+
+    /** Get an instance of the client's socket */
+    public Socket getClientSocket() {
+        return this.socket;
     }
 
     /**
@@ -98,28 +104,28 @@ public class MessengerHandler implements Runnable {
             this.registerUser();
 
             while (true) {
-                Message message = (Message) streamFromClient.readObject();
+                Message message = new Message((String) streamFromClient.readObject(), this.username);
                 String messageBody = message.getMessageBody();
                 // Overwrite this.username with the one contained in the message
-                this.username = message.getUser();
+                // this.username = message.getUser();
                 System.out.println(message.toString());
-                for (String keyword : keywords) {
-                    /* Check every keyword. */
-                    if (messageBody.split(" ")[0].equalsIgnoreCase(keyword)) {
-                        /* This checks if the first part of the message contains a keyword. */
-                        if (keyword.equals("REGISTER")) {
-                        } // needs to define a Register method
-                        else if (keyword.equals("LOGIN")) {
-                        } // login method
-                        else { // keyword=LOGOUT
-                            this.connectionPool.removeUser(this);
-                            socket.close();
-                            this.connectionPool.broadcast(this.getUserMessage("just left the chat"));
-                        }
-                        System.out.println("Contains a keyword.");
-                        System.out.printf("%s \n", keyword);
-                    }
-                }
+                // for (String keyword : keywords) {
+                // /* Check every keyword. */
+                // if (messageBody.split(" ")[0].equalsIgnoreCase(keyword)) {
+                // /* This checks if the first part of the message contains a keyword. */
+                // if (keyword.equals("REGISTER")) {
+                // } // needs to define a Register method
+                // else if (keyword.equals("LOGIN")) {
+                // } // login method
+                // else { // keyword=LOGOUT
+                // this.connectionPool.removeUser(this);
+                // socket.close();
+                // this.connectionPool.broadcast(this.getUserMessage("just left the chat"));
+                // }
+                // System.out.println("Contains a keyword.");
+                // System.out.printf("%s \n", keyword);
+                // }
+                // }
 
                 if (messageBody.equalsIgnoreCase("exit"))
                     break;

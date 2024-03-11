@@ -1,8 +1,8 @@
 package server;
 
 import java.io.IOException;
-// import java.io.ObjectOutputStream;
-// import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.ObjectInputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -21,17 +21,16 @@ public class MessengerServer {
         this.serverSocket = null;
         this.connectionPool = null;
     }
-    /* This returns a new output stream. */
-    // private ObjectOutputStream getStreamToClient(Socket socket) throws
-    // IOException {
-    // return new ObjectOutputStream(socket.getOutputStream());
-    // }
 
-    // /* This returns a new input stream. */
-    // private ObjectInputStream getStreamFromClient(Socket socket) throws
-    // IOException{
-    // return new ObjectInputStream(socket.getInputStream());
-    // }
+    /** This returns a new input stream. **/
+    private ObjectInputStream getStreamFromClient(Socket socket) throws IOException {
+        return new ObjectInputStream(socket.getInputStream());
+    }
+    /** This returns a new output stream. **/
+    private ObjectOutputStream getStreamToClient(Socket socket) throws IOException {
+        return new ObjectOutputStream(socket.getOutputStream());
+    }
+
 
     /** This creates a new server socket. **/
     public void connect() throws IOException {
@@ -83,8 +82,10 @@ public class MessengerServer {
                 Thread chatThread = new Thread(handler);
                 /* Starts the handler's thread. */
                 chatThread.start();
+                System.out.println("This while true is being blocking.");
             } else {
                 // If a client failed connecting stop the server.
+                System.out.println("Client down.");
                 break;
             }
         }
@@ -98,7 +99,11 @@ public class MessengerServer {
         try {
             this.setup();
             this.start();
-            System.out.println("Client connected.");
+            System.out.println("CLIENT CONNECTED.");
+            /* The server socket should be able to send something back to the client, */
+            
+
+            // System.out.println("The run method is running in the MessengerServer.");
 
             /* The keywords. */
             // String[] keywords = { "REGISTER", "LOGIN", "LOGOUT" };
