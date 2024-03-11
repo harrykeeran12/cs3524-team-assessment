@@ -5,13 +5,11 @@ package CGS_C.shared;
  * 
  * This class stores the keyword commands for the server..
  */
-public class Commands {
+public class CommandLanguage {
 
   enum Commands{
     REGISTER, LOGIN, LOGOUT
   }
-  public Commands(){
-    return Commands;
-  }
+  
 
 }
