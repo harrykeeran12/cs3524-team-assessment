@@ -8,7 +8,7 @@ import java.net.UnknownHostException;
 import java.util.Scanner;
 
 public class Client {
-    
+
     private Socket socket;
     private String host;
     private int port;
@@ -35,29 +35,29 @@ public class Client {
         return message;
     }
 
-    public void connect() throws IOException, UnknownHostException{
+    public void connect() throws IOException, UnknownHostException {
         this.socket = new Socket(this.host, this.port);
     }
 
-    public void run() throws IOException, UnknownHostException{
+    public void run() throws IOException, UnknownHostException {
         try {
             ObjectOutputStream outputStreamToMessenger = this.getStreamToMessenger();
             ObjectInputStream inputStreamFromMessenger = this.getStreamFromMessenger();
             Scanner input = new Scanner(System.in);
-            while(true){
+            while (true) {
                 System.out.println("Write your message here: ");
                 String message = input.nextLine();
                 outputStreamToMessenger.writeObject(message);
-                if (message.equalsIgnoreCase("exit")){
+                if (message.equalsIgnoreCase("exit")) {
                     System.out.println("Client disconnecting...");
                     input.close();
                     socket.close();
                     break;
                 }
-                    String echoMessenger = (String) inputStreamFromMessenger.readObject();
-                    System.out.println(echoMessenger);
-                } 
-        }catch(ClassNotFoundException e) {
+                String echoMessenger = (String) inputStreamFromMessenger.readObject();
+                System.out.println(echoMessenger);
+            }
+        } catch (ClassNotFoundException e) {
             System.out.println("Received unsupported object from Messenger");
         }
     }

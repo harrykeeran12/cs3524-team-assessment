@@ -6,44 +6,67 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import shared.Message;
 
-public class MessengerHandler implements Runnable{
+/**
+ * A message handler class, which makes sure messages can be sent to all users.
+ * This implements the Runnable interface, allowing for multi-threading
+ * capability.
+ **/
+public class MessengerHandler implements Runnable {
 
     private Socket socket;
     private ObjectOutputStream streamToClient;
     private ObjectInputStream streamFromClient;
     private String username;
     private ConnectionPool connectionPool;
+    /** Reserved keywords for the server to handle in specific ways. */
+    private static String[] keywords = { "REGISTER", "LOGIN", "LOGOUT" };
 
-    public MessengerHandler (Socket socket, ConnectionPool connectionPool){
+    /**
+     * MessengerHandler constructor, which provides an interface for a client to
+     * handle a message.
+     **/
+    public MessengerHandler(Socket socket, ConnectionPool connectionPool) {
         this.socket = socket;
         this.connectionPool = connectionPool;
 
         try {
             this.streamFromClient = new ObjectInputStream(socket.getInputStream());
             this.streamToClient = new ObjectOutputStream(socket.getOutputStream());
-        } catch (IOException e){
+        } catch (IOException e) {
             System.out.println("I/O error");
         }
     }
 
+    /** Registers a new user, and broadcasts the name to everyone. **/
     public void registerUser() throws IOException, ClassNotFoundException {
         try {
             this.username = (String) this.streamFromClient.readObject();
         } catch (IOException e) {
-            System.out.println("User " + this.username + "failed to registered");
+            System.out.println("User " + this.username + "failed to register.");
         }
-        this.connectionPool.broadcast(this.getUserMessage("User "+ this.username + "joined the chat"));
+        this.connectionPool.broadcast(this.getUserMessage(String.format("User: %s joined the chat.\n", this.username)));
     }
 
+    /**
+     * Get the client's username.
+     * 
+     */
     public String getClientName() {
         return this.username;
     }
 
-    public Message getUserMessage (String messageBody){
+    /**
+     * A method to create a new instance of the message class.
+     * 
+     * @param messageBody
+     * @return Message
+     */
+    public Message getUserMessage(String messageBody) {
         return new Message(messageBody, this.username);
     }
 
-    private void close(){
+    /** Close the connection with the server. **/
+    private void close() {
         this.connectionPool.removeUser(this);
         try {
             this.socket.close();
@@ -52,12 +75,12 @@ public class MessengerHandler implements Runnable{
             // In either case, do nothing.
         } finally {
             this.connectionPool.broadcast(
-                this.getUserMessage("just left the chat.")
-            );
+                    this.getUserMessage("just left the chat."));
         }
     }
 
-    public void sendMessageToClient(Message message){
+    /** Send a message specifically to the client. **/
+    public void sendMessageToClient(Message message) {
         try {
             streamToClient.writeObject(message);
         } catch (IOException e) {
@@ -65,10 +88,13 @@ public class MessengerHandler implements Runnable{
         }
     }
 
+    /**
+     * An overridden method that contains the logic to check if a keyword has been
+     * written.
+     **/
     @Override
-    public void run(){
+    public void run() {
         try {
-            String[] keywords = {"REGISTER", "LOGIN", "LOGOUT"};
             this.registerUser();
 
             while (true) {
@@ -81,9 +107,11 @@ public class MessengerHandler implements Runnable{
                     /* Check every keyword. */
                     if (messageBody.split(" ")[0].equalsIgnoreCase(keyword)) {
                         /* This checks if the first part of the message contains a keyword. */
-                        if(keyword.equals("REGISTER")) //needs to define a Register method
-                        else if (keyword.equals("LOGIN")) //login method
-                        else { //keyword=LOGOUT
+                        if (keyword.equals("REGISTER")) {
+                        } // needs to define a Register method
+                        else if (keyword.equals("LOGIN")) {
+                        } // login method
+                        else { // keyword=LOGOUT
                             this.connectionPool.removeUser(this);
                             socket.close();
                             this.connectionPool.broadcast(this.getUserMessage("just left the chat"));
@@ -93,11 +121,12 @@ public class MessengerHandler implements Runnable{
                     }
                 }
 
-                if (messageBody.equalsIgnoreCase("exit")) break;
+                if (messageBody.equalsIgnoreCase("exit"))
+                    break;
                 // send message to all other clients
                 connectionPool.broadcast(message);
             }
-        } catch (IOException e){
+        } catch (IOException e) {
             System.out.println("Communication interrupted with " + this.username);
         } catch (ClassNotFoundException e) {
             System.out.println("Communication interrupted with " + this.username);

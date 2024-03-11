@@ -22,6 +22,6 @@ public class Message implements Serializable {
 
     @Override
     public String toString(){
-        return this.user + ": " + this.messageBody;
+        return String.format("%s : %s", this.user, this.messageBody);
     }
 }
