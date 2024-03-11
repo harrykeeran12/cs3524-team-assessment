@@ -14,11 +14,11 @@ Clean up each directory of the class files with `make clean[SECTION_LETTER]`. Ex
 
 ## D3-D1
 
-- [ ]  Create a client-server.
-- [ ]  A user can create a client who types messages on the command line.
-- [ ]  When the client is aborted with `Ctrl-C` then the conversation stops.
-- [ ]  Your task is to create a simple `Messenger` server, where clients can exchange messages via a server.
-- [ ]  Start the assessment with a simple client – server application based on a socket communication, where the client sends messages to the server and the server is printing these messages
+- [x]  Create a client-server.
+- [x]  A user can create a client who types messages on the command line.
+- [x]  When the client is aborted with `Ctrl-C` then the conversation stops.
+- [x]  Your task is to create a simple `Messenger` server, where clients can exchange messages via a server.
+- [x]  Start the assessment with a simple client – server application based on a socket communication, where the client sends messages to the server and the server is printing these messages
 (regard this as a kind of log of activities and as a debugging feature on the server).
 
 ## C3-C1
