@@ -1,4 +1,4 @@
-package client;
+package CGS_D.client;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
