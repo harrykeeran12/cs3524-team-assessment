@@ -6,7 +6,7 @@ import java.io.ObjectInputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-// import shared.Message;
+ import shared.Message;
 
 /** This class houses the port, server socket, and connection pool. **/
 public class MessengerServer {
@@ -18,8 +18,8 @@ public class MessengerServer {
     /** Constructor to add the items to the socket. **/
     public MessengerServer(int port) {
         this.port = port;
-        this.serverSocket = null;
-        this.connectionPool = null;
+        // this.serverSocket = null;
+        // this.connectionPool = null;
     }
 
     /** This returns a new input stream. **/

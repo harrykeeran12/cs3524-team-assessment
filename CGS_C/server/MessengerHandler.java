@@ -104,8 +104,8 @@ public class MessengerHandler implements Runnable {
             this.registerUser();
 
             while (true) {
-                Message message = new Message((String) streamFromClient.readObject(), this.username);
-                String messageBody = message.getMessageBody();
+                Message message = (Message) streamFromClient.readObject();
+                //String messageBody = message.getMessageBody();
                 // Overwrite this.username with the one contained in the message
                 // this.username = message.getUser();
                 System.out.println(message.toString());
@@ -127,8 +127,8 @@ public class MessengerHandler implements Runnable {
                 // }
                 // }
 
-                if (messageBody.equalsIgnoreCase("exit"))
-                    break;
+                // if (messageBody.equalsIgnoreCase("exit"))
+                //     break;
                 // send message to all other clients
                 connectionPool.broadcast(message);
             }

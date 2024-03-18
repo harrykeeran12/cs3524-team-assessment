@@ -10,7 +10,7 @@ public class RunMessenger {
         try {
             messenger.connect();
         } catch (IOException e){
-            System.out.println("Encountered error during server startup");
+            System.out.println("[RUN MESSENGER] Encountered error during server startup");
         }
         messenger.run();
     }
