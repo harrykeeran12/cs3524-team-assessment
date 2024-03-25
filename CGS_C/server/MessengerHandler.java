@@ -128,9 +128,9 @@ public class MessengerHandler implements Runnable {
                 // }
 
                 // if (messageBody.equalsIgnoreCase("exit"))
-                //     break;
                 // send message to all other clients
                 connectionPool.broadcast(message);
+                // break;
             }
         } catch (IOException e) {
             System.out.println("Communication interrupted with " + this.username);

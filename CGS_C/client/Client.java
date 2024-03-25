@@ -10,7 +10,10 @@ import java.util.Scanner;
 
 import shared.Message;
 
-/** This is the client class, which takes a string, the host and the port, and tries to connect, to send messages. **/
+/**
+ * This is the client class, which takes a string, the host and the port, and
+ * tries to connect, to send messages.
+ **/
 public class Client {
 
     private Socket socket;
@@ -22,7 +25,6 @@ public class Client {
     private ObjectInputStream inputStreamFromMessenger;
     private ObjectOutputStream outputStreamToMessenger;
     private Boolean connected;
-
 
     /** This is the constructor for the client. */
     public Client(String host, int port) {
@@ -53,25 +55,16 @@ public class Client {
             if (message.equalsIgnoreCase("exit")) {
                 this.connected = false;
             }
-        }catch (NoSuchElementException e) {
-            // When the client exit with CTRL-C, this catch avoids error message and close connection
+        } catch (NoSuchElementException e) {
+            // When the client exit with CTRL-C, this catch avoids error message and close
+            // connection
             this.connected = false;
         }
         return message;
     }
 
-    private void sendUserMessage(String message){
-        //send Message object to server including the user's message and username
-        try{
-            Message userMessage = new Message(message, this.username);
-            this.outputStreamToMessenger.writeObject(userMessage);
-        } catch (IOException e){
-            System.out.println("Submission of user's message to server has failed.");
-        }
-    }
-
-    private void connect(){
-        /*Connect the client to the server */
+    private void connect() {
+        /* Connect the client to the server */
         try {
             this.socket = new Socket(this.host, this.port);
             this.outputStreamToMessenger = this.getStreamToMessenger();
@@ -87,9 +80,10 @@ public class Client {
         }
     }
 
-    private void registerUser(){
-        if (!this.connected) return; //if client not successfully connected to the server, then no register possible
-        //test if this username already registered? add this new username to database?
+    private void registerUser() {
+        if (!this.connected)
+            return; // if client not successfully connected to the server, then no register possible
+        // test if this username already registered? add this new username to database?
         System.out.println("Insert your user name :");
         try {
             this.username = this.scanner.nextLine();
@@ -97,7 +91,7 @@ public class Client {
             System.out.println(receivedMessage);
             this.outputStreamToMessenger.writeObject(this.username);
             System.out.println("Registered successfully");
-        } catch (IOException e){
+        } catch (IOException e) {
             System.out.println("Error while registering");
             this.connected = false;
         } catch (ClassNotFoundException e) {
@@ -106,17 +100,17 @@ public class Client {
     }
 
     private void loginUser() {
-        //if username already registered in the database, then connection
+        // if username already registered in the database, then connection
     }
 
     private void logoutUser() {
-        System.out.println(this.username +"is logging out...");
-        try{
+        System.out.println(this.username + "is logging out...");
+        try {
             this.scanner.close();
             this.listenerThread.interrupt();
             this.socket.close();
-        } catch (IOException e){
-            System.out.println("Failed to log out..."); //socket didn't closed itself successfully
+        } catch (IOException e) {
+            System.out.println("Failed to log out..."); // socket didn't closed itself successfully
         }
     }
 
@@ -126,14 +120,14 @@ public class Client {
         this.listenerThread.start();
         System.out.println("\t Started daemon thread.");
         // keeps reading from server and print out the messages from other users
-        while (true){
+        while (true) {
             try {
                 Message receivedMessage = (Message) this.inputStreamFromMessenger.readObject();
                 System.out.println(receivedMessage.toString());
             } catch (ClassNotFoundException e) {
                 System.err.println("Could not deserialise the message.");
             } catch (IOException e) {
-                if(!this.connected) {
+                if (!this.connected) {
                     // If the program is not exited continue listening
                     System.err.println("Failed while listening to server.");
                 } else {
@@ -142,33 +136,36 @@ public class Client {
                 }
             }
         }
+
     }
 
-    public void run(){
-        this.connect(); //connection to server
-        //this.listenToServer();
-        //String receivedMessage = (String) this.inputStreamFromMessenger.readObject();
-        //System.out.println(receivedMessage);
-        this.registerUser();
-        this.listenToServer();
-        //this.loginUser();
-        System.out.println("Client connected!");
-
-        while (this.connected){
-            String mssg = this.getMessageFromTerminal();
-            if (mssg != null){
-                this.sendUserMessage(mssg);
-                System.out.println("message to test");
+    public void run() {
+        this.connect(); // connection to server
+        // this.listenToServer();
+        // String receivedMessage = (String) this.inputStreamFromMessenger.readObject();
+        // System.out.println(receivedMessage);
+        if (this.connected == true) {
+            System.out.println("Client connected!");
+            this.registerUser();
+            this.listenToServer();
+            while (this.connected) {
+                String mssg = this.getMessageFromTerminal();
+                if (mssg != null) {
+                    // this.sendUserMessage(mssg);
+                    System.out.println("message to test");
+                }
+                try {
+                    Message echoMessenger = (Message) this.inputStreamFromMessenger.readObject();
+                    System.out.println(echoMessenger.toString());
+                } catch (IOException e) {
+                    System.out.println("I/O error");
+                } catch (ClassNotFoundException e) {
+                    System.out.println("Message could not be deserialised.");
+                }
             }
-            try{
-                Message echoMessenger = (Message) this.inputStreamFromMessenger.readObject();
-                System.out.println(echoMessenger.toString());
-            } catch (IOException e) {
-                System.out.println("I/O error");
-            } catch (ClassNotFoundException e) {
-                System.out.println("Message could not be deserialised.");
-            }
+            this.logoutUser();
         }
-        this.logoutUser();
+        // this.loginUser();
+
     }
 }
