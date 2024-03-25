@@ -42,6 +42,8 @@ public class MessengerHandler implements Runnable {
         try {
             this.streamToClient.writeObject("Please enter a username.");
             this.username = (String) this.streamFromClient.readObject();
+            /* Send a callback, back to the user saying that they have registered. */
+            this.streamToClient.writeObject(String.format("User %s successfully registered!", this.username));
         } catch (IOException e) {
             System.out.println("User " + this.username + "failed to register.");
         }
@@ -105,7 +107,7 @@ public class MessengerHandler implements Runnable {
 
             while (true) {
                 Message message = (Message) streamFromClient.readObject();
-                //String messageBody = message.getMessageBody();
+                // String messageBody = message.getMessageBody();
                 // Overwrite this.username with the one contained in the message
                 // this.username = message.getUser();
                 System.out.println(message.toString());

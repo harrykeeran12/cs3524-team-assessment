@@ -54,7 +54,7 @@ public class MessengerServer {
         try {
             /* Checks if a client is connected. */
             Socket socket = this.serverSocket.accept();
-            System.out.println("New client connected.");
+            System.out.println("Client connection created.");
             /* In reality maybe send a callback to the client. */
 
             /* This creates a handler, to handle any messages. */

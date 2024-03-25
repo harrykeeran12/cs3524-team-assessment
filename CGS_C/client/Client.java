@@ -92,7 +92,8 @@ public class Client {
                 this.username = this.scanner.nextLine();
                 this.outputStreamToMessenger.writeObject(this.username);
                 /* This is where you would check where the username is entered. */
-                System.out.println("Registered successfully");
+                String callback = (String) this.inputStreamFromMessenger.readObject();
+                System.out.println(callback);
             } catch (IOException e) {
                 System.out.println("Error while registering");
                 this.connected = false;
