@@ -81,21 +81,25 @@ public class Client {
     }
 
     private void registerUser() {
-        if (!this.connected)
-            return; // if client not successfully connected to the server, then no register possible
         // test if this username already registered? add this new username to database?
-        System.out.println("Insert your user name :");
-        try {
-            this.username = this.scanner.nextLine();
-            String receivedMessage = (String) this.inputStreamFromMessenger.readObject();
-            System.out.println(receivedMessage);
-            this.outputStreamToMessenger.writeObject(this.username);
-            System.out.println("Registered successfully");
-        } catch (IOException e) {
-            System.out.println("Error while registering");
-            this.connected = false;
-        } catch (ClassNotFoundException e) {
-            System.out.println("Class not found");
+        if (this.connected == true) {
+
+            // System.out.println("[CLIENT] Insert your username :");
+            try {
+                String receivedMessage = (String) this.inputStreamFromMessenger.readObject();
+                System.out.println(receivedMessage);
+                /* This should ask the user to insert their username. */
+                this.username = this.scanner.nextLine();
+                this.outputStreamToMessenger.writeObject(this.username);
+                System.out.println("Registered successfully");
+            } catch (IOException e) {
+                System.out.println("Error while registering");
+                this.connected = false;
+            } catch (ClassNotFoundException e) {
+                System.out.println("Class not found");
+            }
+        } else {
+            System.out.println("User unable to be registered.");
         }
     }
 
@@ -109,11 +113,13 @@ public class Client {
             this.scanner.close();
             this.listenerThread.interrupt();
             this.socket.close();
+            this.connected = false;
         } catch (IOException e) {
             System.out.println("Failed to log out..."); // socket didn't closed itself successfully
         }
     }
 
+    /** This should start a thread that reads any incoming messages. */
     private void listenToServer() {
         this.listenerThread = new Thread();
         this.listenerThread.setDaemon(true);
@@ -147,20 +153,19 @@ public class Client {
         if (this.connected == true) {
             System.out.println("Client connected!");
             this.registerUser();
-            this.listenToServer();
+            // this.listenToServer();
             while (this.connected) {
                 String mssg = this.getMessageFromTerminal();
                 if (mssg != null) {
                     // this.sendUserMessage(mssg);
+                    
                     System.out.println("message to test");
                 }
                 try {
-                    Message echoMessenger = (Message) this.inputStreamFromMessenger.readObject();
-                    System.out.println(echoMessenger.toString());
+                    this.outputStreamToMessenger.writeObject(new Message(mssg, this.username));
+        
                 } catch (IOException e) {
-                    System.out.println("I/O error");
-                } catch (ClassNotFoundException e) {
-                    System.out.println("Message could not be deserialised.");
+                    System.out.println("Problem with sending a new message.");
                 }
             }
             this.logoutUser();

@@ -32,12 +32,12 @@ public class MessengerServer {
     }
 
 
-    /** This creates a new server socket. **/
+    /** This creates a new server socket. */
     public void connect() throws IOException {
         this.serverSocket = new ServerSocket(this.port);
     }
 
-    /** This is a setup method, that sets up the server. **/
+    /** This is a setup method, that sets up the server. */
     private void setup() throws IOException {
         System.out.println("Setting up messenger server...");
         // this.serverSocket = new ServerSocket(this.port);
@@ -48,13 +48,14 @@ public class MessengerServer {
 
     }
 
-    /** This waits for the client connection. **/
+    /** This waits for the client connection. */
     private MessengerHandler awaitClientConnection() {
         System.out.println("Waiting for new client connection...");
         try {
             /* Checks if a client is connected. */
             Socket socket = this.serverSocket.accept();
             System.out.println("New client connected.");
+            /* In reality maybe send a callback to the client. */
 
             /* This creates a handler, to handle any messages. */
             MessengerHandler handler = new MessengerHandler(
@@ -91,7 +92,7 @@ public class MessengerServer {
         }
     }
 
-    /** This is supposed to run the server.**/
+    /** This is supposed to run the server.*/
     public void run() {
 
         System.out.println("Server is starting...");
@@ -99,7 +100,6 @@ public class MessengerServer {
         try {
             this.setup();
             this.start();
-            System.out.println("CLIENT CONNECTED.");
             /* The server socket should be able to send something back to the client, */
             
 
