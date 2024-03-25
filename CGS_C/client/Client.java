@@ -48,7 +48,7 @@ public class Client {
     }
 
     private String getMessageFromTerminal() {
-        System.out.println("[CLIENT] Write your message here: ");
+        System.out.printf("[%s] Write your message here: ", this.username);
         String message = null;
         try {
             message = this.scanner.nextLine();
@@ -91,6 +91,7 @@ public class Client {
                 /* This should ask the user to insert their username. */
                 this.username = this.scanner.nextLine();
                 this.outputStreamToMessenger.writeObject(this.username);
+                /* This is where you would check where the username is entered. */
                 System.out.println("Registered successfully");
             } catch (IOException e) {
                 System.out.println("Error while registering");
@@ -103,17 +104,23 @@ public class Client {
         }
     }
 
+    /** For a user to login, they must already be in the database. */
     private void loginUser() {
         // if username already registered in the database, then connection
     }
 
+    /**
+     * This method only runs when this.connected is false. This logs out the user
+     * and closes the scanner, the listener thread and the socket connection.
+     */
     private void logoutUser() {
-        System.out.println(this.username + "is logging out...");
+        System.out.println(this.username + " is logging out...");
         try {
             this.scanner.close();
-            this.listenerThread.interrupt();
             this.socket.close();
-            this.connected = false;
+            if (listenerThread != null) {
+                this.listenerThread.interrupt();
+            }
         } catch (IOException e) {
             System.out.println("Failed to log out..."); // socket didn't closed itself successfully
         }
@@ -158,12 +165,12 @@ public class Client {
                 String mssg = this.getMessageFromTerminal();
                 if (mssg != null) {
                     // this.sendUserMessage(mssg);
-                    
-                    System.out.println("message to test");
+
+                    System.out.println("\n");
                 }
                 try {
                     this.outputStreamToMessenger.writeObject(new Message(mssg, this.username));
-        
+
                 } catch (IOException e) {
                     System.out.println("Problem with sending a new message.");
                 }
