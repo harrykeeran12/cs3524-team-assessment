@@ -32,7 +32,7 @@ public class ConnectionPool {
             if (clientName == null) {
                 continue;
             } else if (!clientName.equals(message.getUser())) {
-                System.out.println("Relaying to " + handler.getClientName());
+                // System.out.println("Relaying to " + handler.getClientName());
                 handler.sendMessageToClient(message);
             }
         }

@@ -9,7 +9,7 @@ import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 import shared.Message;
-
+import shared.ListenerThread;
 /**
  * This is the client class, which takes a string, the host and the port, and
  * tries to connect, to send messages.
@@ -20,7 +20,7 @@ public class Client {
     private String host;
     private int port;
     private String username;
-    private Thread listenerThread;
+    private ListenerThread listenerThread;
     private Scanner scanner;
     private ObjectInputStream inputStreamFromMessenger;
     private ObjectOutputStream outputStreamToMessenger;
@@ -48,7 +48,7 @@ public class Client {
     }
 
     private String getMessageFromTerminal() {
-        System.out.printf("[%s] Write your message here: ", this.username);
+        System.out.printf("[%s] Write your message here: \n", this.username);
         String message = null;
         try {
             message = this.scanner.nextLine();
@@ -129,27 +129,11 @@ public class Client {
 
     /** This should start a thread that reads any incoming messages. */
     private void listenToServer() {
-        this.listenerThread = new Thread();
+        this.listenerThread = new ListenerThread(inputStreamFromMessenger, this.connected);
         this.listenerThread.setDaemon(true);
+        // keeps reading from server and print out the messages from other users
         this.listenerThread.start();
         System.out.println("\t Started daemon thread.");
-        // keeps reading from server and print out the messages from other users
-        while (true) {
-            try {
-                Message receivedMessage = (Message) this.inputStreamFromMessenger.readObject();
-                System.out.println(receivedMessage.toString());
-            } catch (ClassNotFoundException e) {
-                System.err.println("Could not deserialise the message.");
-            } catch (IOException e) {
-                if (!this.connected) {
-                    // If the program is not exited continue listening
-                    System.err.println("Failed while listening to server.");
-                } else {
-                    // Otherwise, stop listening
-                    break;
-                }
-            }
-        }
 
     }
 
@@ -161,7 +145,7 @@ public class Client {
         if (this.connected == true) {
             System.out.println("Client connected!");
             this.registerUser();
-            // this.listenToServer();
+            this.listenToServer();
             while (this.connected) {
                 String mssg = this.getMessageFromTerminal();
                 if (mssg != null) {
