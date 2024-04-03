@@ -5,6 +5,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 public class Client {
@@ -40,10 +41,10 @@ public class Client {
     }
 
     public void run() throws IOException, UnknownHostException{
+        Scanner input = new Scanner(System.in);
         try {
             ObjectOutputStream outputStreamToMessenger = this.getStreamToMessenger();
             ObjectInputStream inputStreamFromMessenger = this.getStreamFromMessenger();
-            Scanner input = new Scanner(System.in);
             while(true){
                 System.out.println("Write your message here: ");
                 String message = input.nextLine();
@@ -59,6 +60,11 @@ public class Client {
                 } 
         }catch(ClassNotFoundException e) {
             System.out.println("Received unsupported object from Messenger");
+        } catch (NoSuchElementException e) {
+            // This might be thrown by 'input.nextLine()' if the client exits with CTRL-C.
+            System.out.println("Client disconnecting...");
+            input.close();
+            socket.close();
         }
     }
 }
