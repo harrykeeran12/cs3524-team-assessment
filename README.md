@@ -24,7 +24,7 @@ Clean up each directory of the class files with `make clean[SECTION_LETTER]`. Ex
 ## C3-C1
 
 - [ ]  Develop a simple command language for clients to register with the server. This will require a check to see if a message is a keyword of a command language, using `java.util.Scanner`.
-- [ ]  A user of the client application can type messages on the command line, which is sent by the server **to all** the clients.
+- [x]  A user of the client application can type messages on the command line, which is sent by the server **to all** the clients.
 
 ## B3-B1
 
