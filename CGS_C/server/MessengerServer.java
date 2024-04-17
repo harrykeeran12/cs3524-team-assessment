@@ -69,6 +69,10 @@ public class MessengerServer {
             System.err.println("Could not establish connection with client.");
             return null;
         }
+        catch(NullPointerException e){
+            System.err.println("Server already running on the machine.");
+            return null;
+        }
     }
 
     /**
