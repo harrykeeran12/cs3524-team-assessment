@@ -1,4 +1,4 @@
-# cs3534-team-assessment
+# CS3534-team-assessment
 
 Team assessment for Distributed Systems &amp; Security.
 
@@ -38,3 +38,27 @@ Clean up each directory of the class files with `make clean[SECTION_LETTER]`. Ex
 
 - [ ]  There should be **specific topics** of interest, that users want to sign up to.
 - [ ]  Each user can subscribe or unsubscribe from a topic.
+
+## Running the program
+
+**Cloning the repository**
+- Make sure you have github installed on your device or have access through it on your web browser. 
+- Open the source code you want to run and press `< > Code`. 
+- Copy the URL for the code.
+- Open your IDE, Visual Studio IDE  is recommended.
+- Write the `git clone` command followed by the URL you have copied from github, this clones the repository onto the local machine.
+
+**Downloading extension packs**
+
+- You may have to install some extensions onto your IDE, for this specific program you will need Code runner for Java, Debugger for Java code and Makefile.
+
+**Run the code**
+
+- Go into the `RunMessenger` file and press `run` 
+- Then go into `RunClient` file and press run
+- You will then see prompts in your terminal, you can follow these prompts and view your messages in the terminal 
+- You can add another client but simply going into `RunClient` file again and pressing run 
+
+**Exit**
+
+- All you have to do for this is `CTRL+C` or `kill` the program by `CTRL + SHIFT + DEL`

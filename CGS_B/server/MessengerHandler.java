@@ -137,10 +137,26 @@ public class MessengerHandler implements Runnable {
                         }
 
                     } catch (IndexOutOfBoundsException e) {
-                        // TODO: handle exception
                         System.out.println("Argument for renaming not found.");
                     }
                     // System.out.println("User has been disconnected.");
+                } else if (keyword.equalsIgnoreCase("create")) {
+
+                    System.out.println("Create new group here!");
+                    /* Get supplementary arguments that are specified by the user. */
+                    String args = message.getMessageBody().split(" ")[1];
+                    if (args != null) {
+                        try {
+                            this.connectionPool.groupHandler.createGroup(args);
+                            
+                        } catch (Exception e) {
+                            System.out.println("Problem with creating a new group.");
+                            System.out.println(e.getMessage());
+                        }
+                    } else {
+                        this.sendMessageToClient(new Message("Group name was absent. Syntax is CREATE [group name]. ", args));
+                    }
+
                 } else {
                     connectionPool.broadcast(message);
                 }

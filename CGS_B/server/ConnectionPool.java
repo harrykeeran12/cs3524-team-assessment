@@ -4,11 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import shared.Message;
+import server.GroupHandler;
 
 /** This class houses all the current connections of the server. **/
 
 public class ConnectionPool {
     private List<MessengerHandler> connections = new ArrayList<>();
+    public GroupHandler groupHandler = new GroupHandler();
 
     /** Adds a new connection. **/
     public void addConnection(MessengerHandler handler) {
