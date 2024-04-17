@@ -10,6 +10,7 @@ import java.util.Scanner;
 
 import shared.Message;
 import shared.ListenerThread;
+
 /**
  * This is the client class, which takes a string, the host and the port, and
  * tries to connect, to send messages.
@@ -52,7 +53,11 @@ public class Client {
         String message = null;
         try {
             message = this.scanner.nextLine();
-            if (message.equalsIgnoreCase("exit")) {
+            // System.out.println(String.format("[DEBUG] \t: %s",
+            // Boolean.toString(message.split("\\s+")[0].equalsIgnoreCase("exit"))));
+            // System.out.println(message.split("\\s+")[0]);
+            /* Checks if the first line of the message equals a exit command. */
+            if (message.equalsIgnoreCase("exit") || message.split("\\s+")[0].equalsIgnoreCase("exit")) {
                 this.connected = false;
             }
         } catch (NoSuchElementException e) {
@@ -133,7 +138,7 @@ public class Client {
         this.listenerThread.setDaemon(true);
         // keeps reading from server and print out the messages from other users
         this.listenerThread.start();
-        System.out.println("\t Started daemon thread.");
+        // System.out.println("\t Started daemon thread.");
 
     }
 
