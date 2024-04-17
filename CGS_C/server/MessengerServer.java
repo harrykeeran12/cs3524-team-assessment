@@ -6,7 +6,7 @@ import java.io.ObjectInputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 
- import shared.Message;
+import shared.Message;
 
 /** This class houses the port, server socket, and connection pool. **/
 public class MessengerServer {
@@ -26,11 +26,11 @@ public class MessengerServer {
     private ObjectInputStream getStreamFromClient(Socket socket) throws IOException {
         return new ObjectInputStream(socket.getInputStream());
     }
+
     /** This returns a new output stream. **/
     private ObjectOutputStream getStreamToClient(Socket socket) throws IOException {
         return new ObjectOutputStream(socket.getOutputStream());
     }
-
 
     /** This creates a new server socket. */
     public void connect() throws IOException {
@@ -68,8 +68,7 @@ public class MessengerServer {
             // e.printStackTrace();
             System.err.println("Could not establish connection with client.");
             return null;
-        }
-        catch(NullPointerException e){
+        } catch (NullPointerException e) {
             System.err.println("Server already running on the machine.");
             return null;
         }
@@ -87,7 +86,7 @@ public class MessengerServer {
                 Thread chatThread = new Thread(handler);
                 /* Starts the handler's thread. */
                 chatThread.start();
-                System.out.println("This while true is being blocking.");
+                // System.out.println("This while true is being blocking.");
             } else {
                 // If a client failed connecting stop the server.
                 System.out.println("Client down.");
@@ -96,7 +95,7 @@ public class MessengerServer {
         }
     }
 
-    /** This is supposed to run the server.*/
+    /** This is supposed to run the server. */
     public void run() {
 
         System.out.println("Server is starting...");
@@ -105,42 +104,7 @@ public class MessengerServer {
             this.setup();
             this.start();
             /* The server socket should be able to send something back to the client, */
-            
 
-            // System.out.println("The run method is running in the MessengerServer.");
-
-            /* The keywords. */
-            // String[] keywords = { "REGISTER", "LOGIN", "LOGOUT" };
-
-            // while (true) {
-            // String msgFromClient = (String) inputStream.readObject();
-            // System.out.println("Client sent a message: " + msgFromClient);
-            // for (String keyword : keywords) {
-            // /* Check every keyword. */
-            // if (msgFromClient.split(" ")[0].equalsIgnoreCase(keyword)) {
-            // /* This checks if the first part of the message contains a keyword. */
-            // if(keyword.equals("REGISTER")) {}//needs to define a Register method
-            // else if (keyword.equals("LOGIN")){} //login method
-            // else { //keyword=LOGOUT
-            // this.connectionPool.removeUser(this);
-            // socket.close();
-            // this.connectionPool.broadcast(this.getUserMessage("just left the chat"));
-            // }
-            // System.out.println("Contains a keyword.");
-            // System.out.printf("%s \n", keyword);
-            // }
-            // }
-
-            // outputStream.writeObject("[Your message '" + msgFromClient + "' has been sent
-            // with success.]");
-            // System.out.println("MessengerServer echoes to the client.");
-
-            // if(msgFromClient.equalsIgnoreCase("exit")){
-            // System.out.println("Client disconnecting, Messenger closing...");
-            // socket.close();
-            // break;
-            // }
-            // }
         }
         // } catch(IOException | ClassNotFoundException e){
         // System.out.println("Encountered an error during server execution");

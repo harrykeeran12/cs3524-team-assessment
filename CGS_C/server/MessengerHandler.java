@@ -6,6 +6,8 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import shared.Message;
 
+import java.lang.IndexOutOfBoundsException;
+
 /**
  * A message handler class, which makes sure messages can be sent to all users.
  * This implements the Runnable interface, allowing for multi-threading
@@ -59,6 +61,10 @@ public class MessengerHandler implements Runnable {
         return this.username;
     }
 
+    public void setClientName(String newUsername) {
+        this.username = newUsername;
+    }
+
     /** Get an instance of the client's socket */
     public Socket getClientSocket() {
         return this.socket;
@@ -108,31 +114,36 @@ public class MessengerHandler implements Runnable {
 
             while (true) {
                 Message message = (Message) streamFromClient.readObject();
-                // String messageBody = message.getMessageBody();
-                // Overwrite this.username with the one contained in the message
-                // this.username = message.getUser();
                 System.out.println(message.toString());
-                // for (String keyword : keywords) {
-                // /* Check every keyword. */
-                // if (messageBody.split(" ")[0].equalsIgnoreCase(keyword)) {
-                // /* This checks if the first part of the message contains a keyword. */
-                // if (keyword.equals("REGISTER")) {
-                // } // needs to define a Register method
-                // else if (keyword.equals("LOGIN")) {
-                // } // login method
-                // else { // keyword=LOGOUT
-                // this.connectionPool.removeUser(this);
-                // socket.close();
-                // this.connectionPool.broadcast(this.getUserMessage("just left the chat"));
-                // }
-                // System.out.println("Contains a keyword.");
-                // System.out.printf("%s \n", keyword);
-                // }
-                // }
+                String keyword = message.getMessageBody().split(" ")[0];
+                if (keyword.equalsIgnoreCase("exit")) {
+                    /* Send message saying user has been disconnected. */
+                    connectionPool.broadcast(
+                            new Message(String.format("User %s is being disconnected.", this.username), "[SERVER]"));
+                    System.out.println(String.format("User %s is being disconnected.", this.username));
+                    break;
+                } else if (keyword.equalsIgnoreCase("rename")) {
+                    /* Send message saying user is going to be renamed. */
+                    String oldUsername = this.username;
+                    try {
+                        String args = message.getMessageBody().split(" ")[1];
+                        if (args != null) {
+                            connectionPool.broadcast(new Message(
+                                    String.format("User %s is being renamed to %s.", oldUsername, args),
+                                    "[SERVER]"));
+                            setClientName(args);
+                        } else {
+                            sendMessageToClient(new Message("Unable to complete renaming.", "[SERVER]"));
+                        }
 
-                // if (messageBody.equalsIgnoreCase("exit"))
-                // send message to all other clients
-                connectionPool.broadcast(message);
+                    } catch (IndexOutOfBoundsException e) {
+                        // TODO: handle exception
+                        System.out.println("Argument for renaming not found.");
+                    }
+                    // System.out.println("User has been disconnected.");
+                } else {
+                    connectionPool.broadcast(message);
+                }
                 // break;
             }
         } catch (IOException e) {
