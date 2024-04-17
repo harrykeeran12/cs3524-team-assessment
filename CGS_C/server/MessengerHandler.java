@@ -44,6 +44,7 @@ public class MessengerHandler implements Runnable {
             this.username = (String) this.streamFromClient.readObject();
             /* Send a callback, back to the user saying that they have registered. */
             this.streamToClient.writeObject(String.format("User %s successfully registered!", this.username));
+            System.out.println(String.format("User: %s joined the chat.\n", this.username));
         } catch (IOException e) {
             System.out.println("User " + this.username + "failed to register.");
         }
