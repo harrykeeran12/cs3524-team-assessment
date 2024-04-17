@@ -20,8 +20,6 @@ public class MessengerHandler implements Runnable {
     private ObjectInputStream streamFromClient;
     private String username;
     private ConnectionPool connectionPool;
-    /** Reserved keywords for the server to handle in specific ways. */
-    private static String[] keywords = { "REGISTER", "LOGIN", "LOGOUT" };
 
     /**
      * MessengerHandler constructor, which provides an interface for a client to
@@ -40,10 +38,9 @@ public class MessengerHandler implements Runnable {
     }
 
     /** Registers a new user, and broadcasts the name to everyone. **/
-    public void registerUser() throws IOException, ClassNotFoundException {
+    public void registerUser(String username) throws IOException, ClassNotFoundException {
         try {
-            this.streamToClient.writeObject("Please enter a username.");
-            this.username = (String) this.streamFromClient.readObject();
+            this.username = username;
             /* Send a callback, back to the user saying that they have registered. */
             this.streamToClient.writeObject(String.format("User %s successfully registered!", this.username));
             System.out.println(String.format("User %s joined the chat.\n", this.username));
@@ -111,8 +108,11 @@ public class MessengerHandler implements Runnable {
     @Override
     public void run() {
         try {
-            this.registerUser();
-
+            this.streamToClient.writeObject("Please first register by typing REGISTER username.");
+            String msg = (String) this.streamFromClient.readObject();
+            if (msg.split(" ")[0].equals("REGISTER")) {
+                this.registerUser(msg.split(" ")[1]);
+            }
             while (true) {
                 Message message = (Message) streamFromClient.readObject();
                 System.out.println(message.toString());
