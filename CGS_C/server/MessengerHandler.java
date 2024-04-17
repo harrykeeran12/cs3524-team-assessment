@@ -46,11 +46,11 @@ public class MessengerHandler implements Runnable {
             this.username = (String) this.streamFromClient.readObject();
             /* Send a callback, back to the user saying that they have registered. */
             this.streamToClient.writeObject(String.format("User %s successfully registered!", this.username));
-            System.out.println(String.format("User: %s joined the chat.\n", this.username));
+            System.out.println(String.format("User %s joined the chat.\n", this.username));
         } catch (IOException e) {
             System.out.println("User " + this.username + "failed to register.");
         }
-        this.connectionPool.broadcast(this.getUserMessage(String.format("User: %s joined the chat.\n", this.username)));
+        this.connectionPool.broadcast(this.getUserMessage(String.format("User %s joined the chat.\n", this.username)));
     }
 
     /**
@@ -62,7 +62,8 @@ public class MessengerHandler implements Runnable {
     }
 
     public void setClientName(String newUsername) {
-        this.username = newUsername;
+        username = getClientName();
+        username = newUsername;
     }
 
     /** Get an instance of the client's socket */
@@ -116,13 +117,13 @@ public class MessengerHandler implements Runnable {
                 Message message = (Message) streamFromClient.readObject();
                 System.out.println(message.toString());
                 String keyword = message.getMessageBody().split(" ")[0];
-                if (keyword.equalsIgnoreCase("exit")) {
+                if (keyword.equalsIgnoreCase("LOGOUT") || keyword.equalsIgnoreCase("exit")) {
                     /* Send message saying user has been disconnected. */
                     connectionPool.broadcast(
                             new Message(String.format("User %s is being disconnected.", this.username), "[SERVER]"));
                     System.out.println(String.format("User %s is being disconnected.", this.username));
                     break;
-                } else if (keyword.equalsIgnoreCase("rename")) {
+                } else if (keyword.equalsIgnoreCase("RENAME")) {
                     /* Send message saying user is going to be renamed. */
                     String oldUsername = this.username;
                     try {

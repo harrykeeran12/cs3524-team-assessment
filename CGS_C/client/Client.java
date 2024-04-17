@@ -53,13 +53,7 @@ public class Client {
         String message = null;
         try {
             message = this.scanner.nextLine();
-            // System.out.println(String.format("[DEBUG] \t: %s",
-            // Boolean.toString(message.split("\\s+")[0].equalsIgnoreCase("exit"))));
-            // System.out.println(message.split("\\s+")[0]);
-            /* Checks if the first line of the message equals a exit command. */
-            if (message.equalsIgnoreCase("exit") || message.split("\\s+")[0].equalsIgnoreCase("exit")) {
-                this.connected = false;
-            }
+            
         } catch (NoSuchElementException e) {
             // When the client exit with CTRL-C, this catch avoids error message and close
             // connection
@@ -115,6 +109,20 @@ public class Client {
         // if username already registered in the database, then connection
     }
 
+    /**This method enables users to change their usernames */
+    private void rename(String args) {
+        try{
+            if (args != null) {
+                this.username=args;
+            } else {
+                System.out.println("Failed renaming");
+            }
+        } catch (IndexOutOfBoundsException e) {
+            // TODO: handle exception
+            System.out.println("Argument for renaming not found CLIENT SIDE.");
+        }
+    }
+
     /**
      * This method only runs when this.connected is false. This logs out the user
      * and closes the scanner, the listener thread and the socket connection.
@@ -152,14 +160,23 @@ public class Client {
             this.registerUser();
             this.listenToServer();
             while (this.connected) {
-                String mssg = this.getMessageFromTerminal();
-                if (mssg != null) {
+                String message = this.getMessageFromTerminal();
+                if (message != null) {
                     // this.sendUserMessage(mssg);
 
-                    System.out.println("\n");
+                    //System.out.println("\n");
+                    if (message.equalsIgnoreCase("exit") || message.split("\\s+")[0].equalsIgnoreCase("exit")) {
+                        this.connected = false;
+                    }
+                    else if (message.equalsIgnoreCase("LOGOUT") || message.split("\\s+")[0].equalsIgnoreCase("LOGOUT")) {
+                        this.connected = false;
+                    } else if (message.equalsIgnoreCase("RENAME") || message.split("\\s+")[0].equalsIgnoreCase("RENAME")){
+                        String args = message.split(" ")[1];
+                        this.rename(args);
+                    }
                 }
                 try {
-                    this.outputStreamToMessenger.writeObject(new Message(mssg, this.username));
+                    this.outputStreamToMessenger.writeObject(new Message(message, this.username));
 
                 } catch (IOException e) {
                     System.out.println("Problem with sending a new message.");
