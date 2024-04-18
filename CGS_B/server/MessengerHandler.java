@@ -156,9 +156,35 @@ public class MessengerHandler implements Runnable {
                     } else {
                         this.sendMessageToClient(new Message("Group name was absent. Syntax is CREATE [group name]. ", args));
                     }
+                } else if (keyword.equalsIgnoreCase("JOIN")) {
+                    String args = message.getMessageBody().split(" ")[1];
+                    if ( args!= null){
+                        try{
+                            this.connectionPool.groupHandler.joinGroup(args, this);
+                            connectionPool.broadcast(new Message(
+                                    String.format("User %s just joined the group chat %s.", this.username, args),
+                                    "[SERVER]"));
+                        } catch (Exception e){
+                            System.out.format("%s could not join the group chat %s.", this.username, args);
+                            System.out.println(e.getMessage());
+                        }
+                    }
+                } else if (keyword.equalsIgnoreCase("LEAVE")) {
+                    String args = message.getMessageBody().split(" ")[1];
+                    if ( args!= null){
+                        try{
+                            this.connectionPool.groupHandler.leaveGroup(args, this); 
+                            connectionPool.broadcast(new Message(
+                                    String.format("User %s just left the group chat %s.", this.username, args),
+                                    "[SERVER]"));
+                        } catch (Exception e){
+                            System.out.format("Problem when leaving the group chat %s.", args);
+                            System.out.println(e.getMessage());
+                        }
+                    }
 
                 } else {
-                    connectionPool.broadcast(message);
+                    this.connectionPool.broadcast(message);
                 }
                 // break;
             }
