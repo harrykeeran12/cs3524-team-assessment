@@ -122,7 +122,7 @@ public class MessengerHandler implements Runnable {
                             new Message(String.format("User %s is being disconnected.", this.username), "[SERVER]"));
                     System.out.println(String.format("User %s is being disconnected.", this.username));
                     break;
-                } else if (keyword.equalsIgnoreCase("rename")) {
+                } else if (keyword.equalsIgnoreCase("RENAME")) {
                     /* Send message saying user is going to be renamed. */
                     String oldUsername = this.username;
                     try {
@@ -140,7 +140,7 @@ public class MessengerHandler implements Runnable {
                         System.out.println("Argument for renaming not found.");
                     }
                     // System.out.println("User has been disconnected.");
-                } else if (keyword.equalsIgnoreCase("create")) {
+                } else if (keyword.equalsIgnoreCase("CREATE")) {
 
                     System.out.println("Create new group here!");
                     /* Get supplementary arguments that are specified by the user. */

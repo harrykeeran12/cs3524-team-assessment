@@ -59,6 +59,11 @@ public class Client {
             /* Checks if the first line of the message equals a exit command. */
             if (message.equalsIgnoreCase("exit") || message.split("\\s+")[0].equalsIgnoreCase("exit")) {
                 this.connected = false;
+            }else if (message.equalsIgnoreCase("LOGOUT") || message.split("\\s+")[0].equalsIgnoreCase("LOGOUT")) {
+                this.connected = false;
+            } else if (message.equalsIgnoreCase("RENAME") || message.split("\\s+")[0].equalsIgnoreCase("RENAME")){
+                String args = message.split(" ")[1];
+                this.rename(args);
             }
         } catch (NoSuchElementException e) {
             // When the client exit with CTRL-C, this catch avoids error message and close
@@ -85,17 +90,11 @@ public class Client {
         }
     }
 
-    private void registerUser() {
+    private void registerUser(String username) {
         // test if this username already registered? add this new username to database?
         if (this.connected == true) {
-
-            // System.out.println("[CLIENT] Insert your username :");
             try {
-                String receivedMessage = (String) this.inputStreamFromMessenger.readObject();
-                System.out.println(receivedMessage);
-                /* This should ask the user to insert their username. */
-                this.username = this.scanner.nextLine();
-                this.outputStreamToMessenger.writeObject(this.username);
+                this.username = username;
                 /* This is where you would check where the username is entered. */
                 String callback = (String) this.inputStreamFromMessenger.readObject();
                 System.out.println(callback);
@@ -107,6 +106,20 @@ public class Client {
             }
         } else {
             System.out.println("User unable to be registered.");
+        }
+    }
+
+    /**This method enables users to change their usernames */
+    private void rename(String args) {
+        try{
+            if (args != null) {
+                this.username=args;
+            } else {
+                System.out.println("Failed renaming");
+            }
+        } catch (IndexOutOfBoundsException e) {
+            // TODO: handle exception
+            System.out.println("Argument for renaming not found.");
         }
     }
 
@@ -149,7 +162,20 @@ public class Client {
         // System.out.println(receivedMessage);
         if (this.connected == true) {
             System.out.println("Client connected!");
-            this.registerUser();
+            try{
+                String receivedMessage = (String) this.inputStreamFromMessenger.readObject();
+                /* This should ask the user to insert their username. */
+                System.out.println(receivedMessage);
+                String msg = this.scanner.nextLine();
+                this.outputStreamToMessenger.writeObject(msg);
+                if (msg.split(" ")[0].equals("REGISTER")){
+                    this.registerUser(msg.split(" ")[1]);
+                }
+            }catch (ClassNotFoundException e){
+                System.out.println("error");
+            } catch (IOException e) {
+                System.out.println("error");
+            }
             this.listenToServer();
             while (this.connected) {
                 String mssg = this.getMessageFromTerminal();
