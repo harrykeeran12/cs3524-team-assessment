@@ -25,29 +25,79 @@ public class ConnectionPool {
     }
 
     /** Checks if a username is already being used when registering. **/
-    public boolean containsForRegister(String username){
+    public boolean containsForRegister(String username) {
         int occurrence = 0;
-        for (MessengerHandler handler : this.connections){
-            if (handler.getClientName().equals(username)){
-                occurrence ++;
+        for (MessengerHandler handler : this.connections) {
+            if (handler.getClientName().equals(username)) {
+                occurrence++;
             }
         }
-        if ((this.connections.size()>=1) && occurrence>1){
-            /*If there is more than one user connected and if the username already exists,
+        if ((this.connections.size() >= 1) && occurrence > 1) {
+            /*
+             * If there is more than one user connected and if the username already exists,
              * then user should use another name.
              * This case excludes the very first registering.
-            */
+             */
             return true;
-        } 
+        }
         return false;
     }
 
     /** Checks if a username is already being used when renaming. **/
-    public boolean containsForRename(String username){
-        for (MessengerHandler handler : this.connections){
-            if (handler.getClientName().equals(username)){
+    public boolean containsForRename(String username) {
+        for (MessengerHandler handler : this.connections) {
+            if (handler.getClientName().equals(username)) {
                 return true;
             }
+        }
+        return false;
+    }
+
+    /**
+     * Check if a username is connected to a handler. This also checks if a user with a specific name is present.
+     * @param message
+     */
+    public boolean containsUsername(String username){
+        for (MessengerHandler handler : this.connections) {
+            if (username.equalsIgnoreCase(handler.getClientName())) {
+                return true;
+            }
+        }
+        return false;
+    }
+    /**
+     * This method gets all the usernames that are currently connected to the server.
+     * 
+     */
+    public ArrayList<String> getAllUsernames(){
+
+        ArrayList<String> usernameList = new ArrayList<String>(this.connections.size());
+        for (MessengerHandler handler : this.connections) {
+            if (handler.getClientName().equalsIgnoreCase(null) == false) {
+                usernameList.add(handler.getClientName());
+            }
+        }
+        return usernameList;
+    }
+    /**
+     * A method to find a user by a username, and return the message handler.
+     * @param username
+     * @return
+     */
+    public MessengerHandler findUser(String username){
+        for (MessengerHandler messengerHandler : connections) {
+            if (messengerHandler.getClientName().equalsIgnoreCase(username)){
+                return messengerHandler;
+            }
+        }
+        return null;
+    }
+
+    public boolean sendToUser(String username, Message message){
+        MessengerHandler recipient = findUser(username);
+        if (recipient != null) {
+            recipient.sendMessageToClient(message);
+            return true;
         }
         return false;
     }
