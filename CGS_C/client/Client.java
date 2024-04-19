@@ -170,6 +170,8 @@ public class Client {
                     }
                     else if (message.equalsIgnoreCase("LOGOUT") || message.split("\\s+")[0].equalsIgnoreCase("LOGOUT")) {
                         this.connected = false;
+                    }else if (message.equalsIgnoreCase("unregister") || message.split("\\s+")[0].equalsIgnoreCase("unregister")){
+                        this.connected = false;
                     } else if (message.equalsIgnoreCase("RENAME") || message.split("\\s+")[0].equalsIgnoreCase("RENAME")){
                         String args = message.split(" ")[1];
                         this.rename(args);

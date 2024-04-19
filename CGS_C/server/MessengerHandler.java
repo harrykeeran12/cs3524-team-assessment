@@ -120,7 +120,7 @@ public class MessengerHandler implements Runnable {
                 Message message = (Message) streamFromClient.readObject();
                 System.out.println(message.toString());
                 String keyword = message.getMessageBody().split(" ")[0];
-                if (keyword.equalsIgnoreCase("LOGOUT") || keyword.equalsIgnoreCase("exit")) {
+                if (keyword.equalsIgnoreCase("LOGOUT") || keyword.equalsIgnoreCase("exit") || keyword.equalsIgnoreCase("unregister")) {
                     /* Send message saying user has been disconnected. */
                     connectionPool.broadcast(
                             new Message(String.format("User %s is being disconnected.", this.username), "[SERVER]"));
