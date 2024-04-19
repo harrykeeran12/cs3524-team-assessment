@@ -59,8 +59,7 @@ public class MessengerHandler implements Runnable {
     }
 
     public void setClientName(String newUsername) {
-        username = getClientName();
-        username = newUsername;
+        this.username = newUsername;
     }
 
     /** Get an instance of the client's socket */
@@ -111,7 +110,11 @@ public class MessengerHandler implements Runnable {
             this.streamToClient.writeObject("Please first register by typing REGISTER username.");
             String msg = (String) this.streamFromClient.readObject();
             if (msg.split(" ")[0].equals("REGISTER")) {
-                this.registerUser(msg.split(" ")[1]);
+                String newUsername = msg.split(" ")[1];
+                this.registerUser(newUsername);
+                if (connectionPool.containsForRegister(newUsername)){
+                    sendMessageToClient(new Message("This name is already in use, please use another one by typing RENAME.", "[SERVER]"));
+                }
             }
             while (true) {
                 Message message = (Message) streamFromClient.readObject();
@@ -128,12 +131,15 @@ public class MessengerHandler implements Runnable {
                     String oldUsername = this.username;
                     try {
                         String args = message.getMessageBody().split(" ")[1];
-                        if (args != null) {
+                        if (args != null && !connectionPool.containsForRename(args)) {
                             connectionPool.broadcast(new Message(
                                     String.format("User %s is being renamed to %s.", oldUsername, args),
                                     "[SERVER]"));
                             setClientName(args);
+                        }else if (args != null && connectionPool.containsForRename(args)){
+                            sendMessageToClient(new Message("Name already in use, please use another one again.", "[SERVER]"));
                         } else {
+                            /*Case when args == null */
                             sendMessageToClient(new Message("Unable to complete renaming.", "[SERVER]"));
                         }
 

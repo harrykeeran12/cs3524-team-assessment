@@ -155,13 +155,12 @@ public class Client {
                     this.registerUser(msg.split(" ")[1]);
                 }
             }catch (ClassNotFoundException e){
-                System.out.println("error");
+                System.out.println("Failed registering, the message from the server has not been received properly.");
             } catch (IOException e) {
-                System.out.println("error");
+                System.out.println("I/O error while registering.");
             }
             
 
-            //this.registerUser();
             this.listenToServer();
             while (this.connected) {
                 String message = this.getMessageFromTerminal();
