@@ -122,7 +122,7 @@ public class MessengerHandler implements Runnable {
                             new Message(String.format("User %s is being disconnected.", this.username), "[SERVER]"));
                     System.out.println(String.format("User %s is being disconnected.", this.username));
                     break;
-                } else if (keyword.equalsIgnoreCase("RENAME")) {
+                } else if (keyword.equalsIgnoreCase("rename")) {
                     /* Send message saying user is going to be renamed. */
                     String oldUsername = this.username;
                     try {
@@ -140,7 +140,7 @@ public class MessengerHandler implements Runnable {
                         System.out.println("Argument for renaming not found.");
                     }
                     // System.out.println("User has been disconnected.");
-                } else if (keyword.equalsIgnoreCase("CREATE")) {
+                } else if (keyword.equalsIgnoreCase("create")) {
 
                     System.out.println("Create new group here!");
                     /* Get supplementary arguments that are specified by the user. */
@@ -154,9 +154,9 @@ public class MessengerHandler implements Runnable {
                             System.out.println(e.getMessage());
                         }
                     } else {
-                        this.sendMessageToClient(new Message("Group name was absent. Syntax is CREATE [group name]. ", args));
+                        this.sendMessageToClient(new Message("Group name was absent. Syntax is create [group name]. ", args));
                     }
-                } else if (keyword.equalsIgnoreCase("JOIN")) {
+                } else if (keyword.equalsIgnoreCase("join")) {
                     String args = message.getMessageBody().split(" ")[1];
                     if ( args!= null){
                         try{
@@ -169,7 +169,7 @@ public class MessengerHandler implements Runnable {
                             System.out.println(e.getMessage());
                         }
                     }
-                } else if (keyword.equalsIgnoreCase("LEAVE")) {
+                } else if (keyword.equalsIgnoreCase("leave")) {
                     String args = message.getMessageBody().split(" ")[1];
                     if ( args!= null){
                         try{

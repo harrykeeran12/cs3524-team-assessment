@@ -59,9 +59,9 @@ public class Client {
             /* Checks if the first line of the message equals a exit command. */
             if (message.equalsIgnoreCase("exit") || message.split("\\s+")[0].equalsIgnoreCase("exit")) {
                 this.connected = false;
-            }else if (message.equalsIgnoreCase("LOGOUT") || message.split("\\s+")[0].equalsIgnoreCase("LOGOUT")) {
+            }else if (message.equalsIgnoreCase("logout") || message.split("\\s+")[0].equalsIgnoreCase("logout")) {
                 this.connected = false;
-            } else if (message.equalsIgnoreCase("RENAME") || message.split("\\s+")[0].equalsIgnoreCase("RENAME")){
+            } else if (message.equalsIgnoreCase("rename") || message.split("\\s+")[0].equalsIgnoreCase("rename")){
                 String args = message.split(" ")[1];
                 this.rename(args);
             }
