@@ -157,9 +157,6 @@ public class Client {
 
     public void run() {
         this.connect(); // connection to server
-        // this.listenToServer();
-        // String receivedMessage = (String) this.inputStreamFromMessenger.readObject();
-        // System.out.println(receivedMessage);
         if (this.connected == true) {
             System.out.println("Client connected!");
             try{
@@ -168,7 +165,7 @@ public class Client {
                 System.out.println(receivedMessage);
                 String msg = this.scanner.nextLine();
                 this.outputStreamToMessenger.writeObject(msg);
-                if (msg.split(" ")[0].equals("REGISTER")){
+                if (msg.split(" ")[0].equals("register")){
                     this.registerUser(msg.split(" ")[1]);
                 }
             }catch (ClassNotFoundException e){

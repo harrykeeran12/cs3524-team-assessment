@@ -20,8 +20,6 @@ public class MessengerHandler implements Runnable {
     private ObjectInputStream streamFromClient;
     private String username;
     private ConnectionPool connectionPool;
-    /** Reserved keywords for the server to handle in specific ways. */
-    private static String[] keywords = { "REGISTER", "LOGIN", "LOGOUT" };
 
     /**
      * MessengerHandler constructor, which provides an interface for a client to
@@ -40,10 +38,9 @@ public class MessengerHandler implements Runnable {
     }
 
     /** Registers a new user, and broadcasts the name to everyone. **/
-    public void registerUser() throws IOException, ClassNotFoundException {
+    public void registerUser(String username) throws IOException, ClassNotFoundException {
         try {
-            this.streamToClient.writeObject("Please enter a username.");
-            this.username = (String) this.streamFromClient.readObject();
+            this.username = username;
             /* Send a callback, back to the user saying that they have registered. */
             this.streamToClient.writeObject(String.format("User %s successfully registered!", this.username));
             System.out.println(String.format("User: %s joined the chat.\n", this.username));
@@ -110,8 +107,15 @@ public class MessengerHandler implements Runnable {
     @Override
     public void run() {
         try {
-            this.registerUser();
-
+            this.streamToClient.writeObject("Please first register by typing 'register username'.");
+            String msg = (String) this.streamFromClient.readObject();
+            if (msg.split(" ")[0].equals("register")) {
+                String newUsername = msg.split(" ")[1];
+                this.registerUser(newUsername);
+                if (connectionPool.containsForRegister(newUsername)){
+                    sendMessageToClient(new Message("This name is already in use, please use another one by typing 'rename username'.", "[SERVER]"));
+                }
+            }
             while (true) {
                 Message message = (Message) streamFromClient.readObject();
                 System.out.println(message.toString());
@@ -127,11 +131,13 @@ public class MessengerHandler implements Runnable {
                     String oldUsername = this.username;
                     try {
                         String args = message.getMessageBody().split(" ")[1];
-                        if (args != null) {
+                        if (args != null && !connectionPool.containsForRename(args)) {
                             connectionPool.broadcast(new Message(
                                     String.format("User %s is being renamed to %s.", oldUsername, args),
                                     "[SERVER]"));
                             setClientName(args);
+                        } else if (args != null && connectionPool.containsForRename(args)){
+                            sendMessageToClient(new Message("Name already in use, please use another one again.", "[SERVER]"));
                         } else {
                             sendMessageToClient(new Message("Unable to complete renaming.", "[SERVER]"));
                         }

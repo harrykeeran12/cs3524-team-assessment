@@ -24,6 +24,34 @@ public class ConnectionPool {
         connections.remove(handler);
     }
 
+    /** Checks if a username is already being used when registering. **/
+    public boolean containsForRegister(String username){
+        int occurrence = 0;
+        for (MessengerHandler handler : this.connections){
+            if (handler.getClientName().equals(username)){
+                occurrence ++;
+            }
+        }
+        if ((this.connections.size()>=1) && occurrence>1){
+            /*If there is more than one user connected and if the username already exists,
+             * then user should use another name.
+             * This case excludes the very first registering.
+            */
+            return true;
+        } 
+        return false;
+    }
+
+    /** Checks if a username is already being used when renaming. **/
+    public boolean containsForRename(String username){
+        for (MessengerHandler handler : this.connections){
+            if (handler.getClientName().equals(username)){
+                return true;
+            }
+        }
+        return false;
+    }
+
     /**
      * Broadcasts a message to all currently connected users, by checking if their
      * name is not null.
