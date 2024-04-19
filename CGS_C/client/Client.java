@@ -151,7 +151,7 @@ public class Client {
                 System.out.println(receivedMessage);
                 String msg = this.scanner.nextLine();
                 this.outputStreamToMessenger.writeObject(msg);
-                if (msg.split(" ")[0].equals("REGISTER")){
+                if (msg.split(" ")[0].equals("register")){
                     this.registerUser(msg.split(" ")[1]);
                 }
             }catch (ClassNotFoundException e){
@@ -168,11 +168,11 @@ public class Client {
                     if (message.equalsIgnoreCase("exit") || message.split("\\s+")[0].equalsIgnoreCase("exit")) {
                         this.connected = false;
                     }
-                    else if (message.equalsIgnoreCase("LOGOUT") || message.split("\\s+")[0].equalsIgnoreCase("LOGOUT")) {
+                    else if (message.equalsIgnoreCase("logout") || message.split("\\s+")[0].equalsIgnoreCase("logout")) {
                         this.connected = false;
                     }else if (message.equalsIgnoreCase("unregister") || message.split("\\s+")[0].equalsIgnoreCase("unregister")){
                         this.connected = false;
-                    } else if (message.equalsIgnoreCase("RENAME") || message.split("\\s+")[0].equalsIgnoreCase("RENAME")){
+                    } else if (message.equalsIgnoreCase("rename") || message.split("\\s+")[0].equalsIgnoreCase("rename")){
                         String args = message.split(" ")[1];
                         this.rename(args);
                     }

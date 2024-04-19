@@ -107,26 +107,26 @@ public class MessengerHandler implements Runnable {
     @Override
     public void run() {
         try {
-            this.streamToClient.writeObject("Please first register by typing REGISTER username.");
+            this.streamToClient.writeObject("Please first register by typing 'register username'.");
             String msg = (String) this.streamFromClient.readObject();
-            if (msg.split(" ")[0].equals("REGISTER")) {
+            if (msg.split(" ")[0].equals("register")) {
                 String newUsername = msg.split(" ")[1];
                 this.registerUser(newUsername);
                 if (connectionPool.containsForRegister(newUsername)){
-                    sendMessageToClient(new Message("This name is already in use, please use another one by typing RENAME.", "[SERVER]"));
+                    sendMessageToClient(new Message("This name is already in use, please use another one by typing 'rename username'.", "[SERVER]"));
                 }
             }
             while (true) {
                 Message message = (Message) streamFromClient.readObject();
                 System.out.println(message.toString());
                 String keyword = message.getMessageBody().split(" ")[0];
-                if (keyword.equalsIgnoreCase("LOGOUT") || keyword.equalsIgnoreCase("exit") || keyword.equalsIgnoreCase("unregister")) {
+                if (keyword.equalsIgnoreCase("logout") || keyword.equalsIgnoreCase("exit") || keyword.equalsIgnoreCase("unregister")) {
                     /* Send message saying user has been disconnected. */
                     connectionPool.broadcast(
                             new Message(String.format("User %s is being disconnected.", this.username), "[SERVER]"));
                     System.out.println(String.format("User %s is being disconnected.", this.username));
                     break;
-                } else if (keyword.equalsIgnoreCase("RENAME")) {
+                } else if (keyword.equalsIgnoreCase("rename")) {
                     /* Send message saying user is going to be renamed. */
                     String oldUsername = this.username;
                     try {
