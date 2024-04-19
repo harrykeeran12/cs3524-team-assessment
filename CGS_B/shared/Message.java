@@ -12,6 +12,11 @@ public class Message implements Serializable {
         this.user = user;
     }
 
+    public Message(String messageBody){
+        this.messageBody = messageBody;
+        this.user = "[SERVER]";
+    }
+
     public String getMessageBody(){
         return this.messageBody;
     }
