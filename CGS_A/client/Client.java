@@ -27,7 +27,11 @@ public class Client {
     private ObjectOutputStream outputStreamToMessenger;
     private Boolean connected;
 
-    /** This is the constructor for the client. */
+    /**
+     * This is the constructor for the client.
+     * @param host
+     * @param port
+     */
     public Client(String host, int port) {
         this.host = host;
         this.port = port;
@@ -40,22 +44,33 @@ public class Client {
         // this.connected = null;
     }
 
+    /**
+     * Returns an output stream from the client to the server
+     * @return an ObjectOutputStream connected to the socket's output stream
+     * @throws IOException
+     */
     private ObjectOutputStream getStreamToMessenger() throws IOException {
         return new ObjectOutputStream(this.socket.getOutputStream());
     }
 
+    /**
+     * Returns an input stream from the server to the client
+     * @return an ObjectInputStream connected to the socket's input stream
+     * @throws IOException
+     */
     private ObjectInputStream getStreamFromMessenger() throws IOException {
         return new ObjectInputStream(this.socket.getInputStream());
     }
 
+    /**
+     * Returns the client's message from the terminal and checks if there is a keyword
+     * @return String
+     */
     private String getMessageFromTerminal() {
         System.out.printf("[%s] Write your message here: \n", this.username);
         String message = null;
         try {
             message = this.scanner.nextLine();
-            // System.out.println(String.format("[DEBUG] \t: %s",
-            // Boolean.toString(message.split("\\s+")[0].equalsIgnoreCase("exit"))));
-            // System.out.println(message.split("\\s+")[0]);
             /* Checks if the first line of the message equals a exit command. */
             if (message.equalsIgnoreCase("exit") || message.split("\\s+")[0].equalsIgnoreCase("exit")) {
                 this.connected = false;
@@ -83,8 +98,12 @@ public class Client {
         return message;
     }
 
+    /**
+     * Connects the client to the server by creating a socket with host and port number
+     * @throws IOException
+     * @throws UnknownHostException
+     */
     private void connect() {
-        /* Connect the client to the server */
         try {
             this.socket = new Socket(this.host, this.port);
             this.outputStreamToMessenger = this.getStreamToMessenger();
@@ -100,8 +119,11 @@ public class Client {
         }
     }
 
+    /**
+     * Register a new user
+     * @param username
+     */
     private void registerUser(String username) {
-        // test if this username already registered? add this new username to database?
         if (this.connected == true) {
             try {
                 this.username = username;
@@ -119,7 +141,11 @@ public class Client {
         }
     }
 
-    /**This method enables users to change their usernames */
+    /**
+     * This method enables users to change their usernames
+     * @param args
+     * @throws ArrayIndexOutOfBoundsException
+     */
     private void rename(String args) throws ArrayIndexOutOfBoundsException{
         if (args != null) {
             this.username=args;
@@ -155,6 +181,9 @@ public class Client {
 
     }
 
+    /**
+     * This is supposed to run a client
+     */
     public void run() {
         this.connect(); // connection to server
         if (this.connected == true) {

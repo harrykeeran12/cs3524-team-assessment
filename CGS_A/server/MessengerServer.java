@@ -15,29 +15,48 @@ public class MessengerServer {
     private ServerSocket serverSocket;
     private ConnectionPool connectionPool;
 
-    /** Constructor to add the items to the socket. **/
+    /**
+     * Constructor to add the items to the socket.
+     * @param port
+     */
     public MessengerServer(int port) {
         this.port = port;
         // this.serverSocket = null;
         // this.connectionPool = null;
     }
 
-    /** This returns a new input stream. **/
+    /**
+     * This returns a new input stream.
+     * @param socket
+     * @return
+     * @throws IOException
+     */
     private ObjectInputStream getStreamFromClient(Socket socket) throws IOException {
         return new ObjectInputStream(socket.getInputStream());
     }
 
-    /** This returns a new output stream. **/
+    /**
+     * This returns a new output stream.
+     * @param socket
+     * @return
+     * @throws IOException
+     */
     private ObjectOutputStream getStreamToClient(Socket socket) throws IOException {
         return new ObjectOutputStream(socket.getOutputStream());
     }
 
-    /** This creates a new server socket. */
+    /**
+     * This creates a new server socket.
+     * @throws IOException
+     */
     public void connect() throws IOException {
         this.serverSocket = new ServerSocket(this.port);
     }
 
-    /** This is a setup method, that sets up the server. */
+    /**
+     * This is a setup method, that sets up the server.
+     * @throws IOException
+     */
     private void setup() throws IOException {
         System.out.println("Setting up messenger server...");
         // this.serverSocket = new ServerSocket(this.port);
@@ -48,7 +67,10 @@ public class MessengerServer {
 
     }
 
-    /** This waits for the client connection. */
+    /**
+     * This waits for the client connection.
+     * @return
+     */
     private MessengerHandler awaitClientConnection() {
         System.out.println("Waiting for new client connection...");
         try {
@@ -107,11 +129,7 @@ public class MessengerServer {
             this.start();
             /* The server socket should be able to send something back to the client, */
 
-        }
-        // } catch(IOException | ClassNotFoundException e){
-        // System.out.println("Encountered an error during server execution");
-        // }
-        catch (IOException e) {
+        } catch (IOException e) {
             System.out.println("Encountered an error during server execution");
         }
     }

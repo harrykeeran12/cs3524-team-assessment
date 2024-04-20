@@ -18,12 +18,6 @@ public class TopicHandler {
    * @param topicName
    * @throws Exception
    */
-  /**
-   * This lets you create a new topic.
-   * 
-   * @param topicName
-   * @throws Exception
-   */
   public void createTopic(String topicName) throws Exception {
     if (topicList.containsKey(topicName) == false) {
       System.out.println(String.format("Creating a new topic %s\n", topicName));
@@ -36,8 +30,9 @@ public class TopicHandler {
 
   /**
    * This method lets you subscribe to a topic by joining the group.
-   * 
    * @param topicName
+   * @param userHandler
+   * @throws Exception
    */
   public void subscribeToTopic(String topicName, MessengerHandler userHandler) throws Exception {
     if (topicList.containsKey(topicName) == true) {
@@ -57,8 +52,9 @@ public class TopicHandler {
 
   /**
    * This method lets you unsubscribe to a topic by leaving the group.
-   * 
    * @param topicName
+   * @param userHandler
+   * @throws Exception
    */
   public void unsubscribeToTopic(String topicName, MessengerHandler userHandler) throws Exception {
     if (topicList.containsKey(topicName) == true) {
@@ -75,9 +71,12 @@ public class TopicHandler {
       throw new Exception("This topic is already in the list.");
     }
   }
+
   /**
-   * Get a topic group via the name.
+   * Gets a topic group via the name.
+   * @param topicName
    * @return
+   * @throws Exception
    */
   public Group getTopicGroup(String topicName) throws Exception{
     if (topicList.containsKey(topicName) == true) {
@@ -87,6 +86,7 @@ public class TopicHandler {
       throw new Exception("Topic name was invalid.");
     }
   }
+  
   /**
    * This method returns the names of all the topics.
    * 
