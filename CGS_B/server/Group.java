@@ -15,10 +15,18 @@ public class Group {
   private ArrayList<MessengerHandler> messengerHandlerList = new ArrayList<MessengerHandler>();
   public Integer currentOccupancy = 0;
 
+  /**
+   * Constructs a new group with the specified group name
+   * @param newGroupName
+   */
   public Group(String newGroupName) {
     this.groupName = newGroupName;
   }
 
+  /**
+   * Enables a user to join a group chat.
+   * @param userMessageHandler
+   */
   public void joinGroup(MessengerHandler userMessageHandler) {
     /*
      * If the username is not in the array list of message handlers, add them to the
@@ -30,6 +38,10 @@ public class Group {
     this.currentOccupancy += 1;
   }
 
+  /**
+   * Enables a user to leave a group chat
+   * @param userMessageHandler
+   */
   public void leaveGroup(MessengerHandler userMessageHandler) {
     /*
      * If the username is in the array list of message handlers, then remove them
@@ -43,6 +55,7 @@ public class Group {
       }
     }
   }
+
   /**
    * Checks the membership of a username in a group.
    * @param username
@@ -57,6 +70,11 @@ public class Group {
     return false;
   }
 
+  /**
+   * Broadcasts a message to all currently connected users who are part
+   * of the same group chat, by checking if their name is not null.
+   * @param newMessage
+   */
   public void broadcastGroup(Message newMessage) {
     for (MessengerHandler handler : this.messengerHandlerList) {
       String clientName = handler.getClientName();

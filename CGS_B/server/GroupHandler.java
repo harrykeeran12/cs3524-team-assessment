@@ -14,7 +14,7 @@ public class GroupHandler {
   protected HashMap<String, Group> groupHashMap = new HashMap<String, Group>();
 
   /**
-   * Allow a user to create a new group.
+   * Allows a user to create a new group.
    * 
    * @param groupName
    * @return a new Group.
@@ -33,7 +33,7 @@ public class GroupHandler {
   }
 
   /**
-   * Allow a user to join a specific group.
+   * Allows a user to join a specific group.
    * 
    * @param groupName
    * @param userMessengerHandler
@@ -54,7 +54,7 @@ public class GroupHandler {
   }
 
   /**
-   * Allow a user(represented by a handler, to leave a specific group).
+   * Allows a user(represented by a handler, to leave a specific group).
    * 
    * @param groupName
    * @param userMessengerHandler
@@ -71,7 +71,7 @@ public class GroupHandler {
   }
 
   /**
-   * Remove a specific group from the group hash map.
+   * Removes a specific group from the group hash map.
    * 
    * @param groupName
    * @throws Exception
@@ -84,7 +84,8 @@ public class GroupHandler {
       throw new Exception("Group was unable to be removed.");
     }
   }
-/**
+
+ /**
  * This finds a group. 
  * @param groupName
  * @return
@@ -99,6 +100,7 @@ public class GroupHandler {
       throw new Exception("Specified group cannot be found.");
     }
   }
+
   /**
    * This function returns all the names of the groups that have currently been
    * created.
@@ -106,6 +108,5 @@ public class GroupHandler {
   public Set<String> getGroupNames() {
     return groupHashMap.keySet();
   }
-
- 
+  
 }
