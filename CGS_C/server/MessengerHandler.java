@@ -112,10 +112,10 @@ public class MessengerHandler implements Runnable {
             if (msg.split(" ")[0].equals("register")) {
                 try{
                     String newUsername = msg.split(" ")[1];
-                    this.registerUser(newUsername);
-                    if (connectionPool.containsForRegister(newUsername)){
-                        sendMessageToClient(new Message("Name is already in use, please use another one by typing 'rename username'.", "[SERVER]"));
+                    if (!connectionPool.containsUsername(newUsername)){
+                        this.registerUser(newUsername);
                     }
+                    else sendMessageToClient(new Message("Name is already in use, please use another one by typing 'rename username'.", "[SERVER]"));
                 } catch (ArrayIndexOutOfBoundsException e){
                     System.out.println("Argument for renaming not found, waiting for client to try again...");
                 }
@@ -134,14 +134,13 @@ public class MessengerHandler implements Runnable {
                 } else if (keyword.equalsIgnoreCase("register")){
                     try{
                         String newUsername = message.getMessageBody().split(" ")[1];
-                        if (newUsername != null){
-                            this.setClientName(newUsername);
-                            if(connectionPool.containsForRegister(newUsername)){
-                                sendMessageToClient(new Message("This name is already in use, please use another one by typing 'rename username'.", "[SERVER]"));
-                            } else {
-                                System.out.println(String.format("User %s successfully registered and joined the chat.\n", this.username));
-                                this.connectionPool.broadcast(this.getUserMessage(String.format("User %s joined the chat.\n", this.username)));
-                            }
+                        if (newUsername != null && !connectionPool.containsUsername(newUsername)){
+                            setClientName(newUsername);
+                            sendMessageToClient(new Message("You successfully registered and joined the chat.", "[SERVER]"));
+                            this.connectionPool.broadcast(this.getUserMessage(String.format("User %s joined the chat.\n", this.username)));
+                            System.out.println(String.format("User %s successfully registered and joined the chat.\n", this.username));
+                        }else {
+                            sendMessageToClient(new Message("Name already in use, please use another one again.", "[SERVER]"));
                         }
                     } catch (ArrayIndexOutOfBoundsException e){
                         System.out.println("Argument for renaming not found.");
@@ -151,14 +150,14 @@ public class MessengerHandler implements Runnable {
                     String oldUsername = this.username;
                     try {
                         String args = message.getMessageBody().split(" ")[1];
-                        if (args != null && !connectionPool.containsForRename(args)) {
+                        if (args != null && !connectionPool.containsUsername(args)) {
                             connectionPool.broadcast(new Message(
                                     String.format("User %s is being renamed to %s.", oldUsername, args),
                                     "[SERVER]"));
                             setClientName(args);
-                        } else if (args != null && connectionPool.containsForRename(args)){
+                        } else {
                             sendMessageToClient(new Message("Name already in use, please use another one again.", "[SERVER]"));
-                        } 
+                        }
                     } catch (ArrayIndexOutOfBoundsException e) {
                         System.out.println("Argument for renaming not found.");
                     }
