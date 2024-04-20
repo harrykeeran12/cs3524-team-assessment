@@ -5,11 +5,9 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Set;
 
 import shared.Message;
-
-import java.lang.IndexOutOfBoundsException;
 
 /**
  * A message handler class, which makes sure messages can be sent to all users.
@@ -234,7 +232,7 @@ public class MessengerHandler implements Runnable {
                         }
                         /* Check if the name is a group name. */
                         else if (this.connectionPool.checkGroupName(receiver) == true) {
-                            try{
+                            try {
                                 Group groupToBroadcast = this.connectionPool.groupHandler.findGroup(receiver);
                                 /* Check if sender is part of group. */
                                 if (groupToBroadcast.checkMembership(sender) == true) {
@@ -242,11 +240,9 @@ public class MessengerHandler implements Runnable {
                                 } else {
                                     sendMessageToClient(new Message("User is not part of the group."));
                                 }
-                               
 
-                            }
-                            catch(Exception e){
-                                 sendMessageToClient(new Message("Error sending a message to the group."));
+                            } catch (Exception e) {
+                                sendMessageToClient(new Message("Error sending a message to the group."));
                             }
                         } else {
                             sendMessageToClient(new Message("This user does not exist."));
@@ -274,8 +270,63 @@ public class MessengerHandler implements Runnable {
                                 String.join(" ", groupList))));
                     }
 
-                } else {
+                } 
+                else if(keyword.equalsIgnoreCase("subscribe")) {
+                    /* Subscribes the user to a particular topic. */
+                    String args = message.getMessageBody().split(" ")[1];
+                    try {
+                        this.connectionPool.topicHandler.subscribeToTopic(args, this);
+                    } catch (Exception e) {
+                        System.out.println("Problem with subscribing.");
+                        System.out.println(e.getMessage());
+                    }
+                    
+                }
+                else if (keyword.equalsIgnoreCase("unsubscribe")) {
+                    /* Unsubscribes the user from a particular topic. */
+                    String args = message.getMessageBody().split(" ")[1];
+                    try {
+                        this.connectionPool.topicHandler.unsubscribeToTopic(args, this);
+                    } catch (Exception e) {
+                        System.out.println("Problem with unsubscribing.");
+                        System.out.println(e.getMessage());
+                    }
+                }
+                else if (keyword.equalsIgnoreCase("topic")) {
+                    /* Gets the next argument. */
+                    String args = message.getMessageBody().split(" ")[1];
+                    try {
+                        this.connectionPool.topicHandler.createTopic(args);
+                    } catch (Exception e) {
+                        System.out.println("Problem with creating a new topic.");
+                        System.out.println(e.getMessage());
+                    }
+                    /* Creates a new topic. */
+                }
+                else if (keyword.equalsIgnoreCase("topics")) {
+                    /* Lists all the current topics that the server has registered. */
+                    Set<String> topicList = this.connectionPool.topicHandler.topicList();
+                    if (topicList.size() == 0) {
+                        System.out.println("No topics have been created.");
+                        sendMessageToClient(new Message("No topics have been created."));
+                    } else {
+                        System.out.println(String.format("Topics are: %s", topicList));
+                        sendMessageToClient(new Message(String.format("Topics are: %s", topicList)));
+                    }
+                    
+                }
+                else {
                     System.out.println(message.toString());
+                    try {
+                        Set<String> foundTopics = message.checkMessageBody(this.connectionPool.topicHandler.topicList());
+                        for (String foundTopic : foundTopics) {
+                            Group groupToBroadcast = this.connectionPool.topicHandler.getTopicGroup(foundTopic);
+                            groupToBroadcast.broadcastGroup(message);
+                        }
+                        
+                    } catch (Exception e) {
+                        System.out.println("Problem with scanning message body.");
+                    }
                     this.connectionPool.broadcast(message);
                 }
                 // break;

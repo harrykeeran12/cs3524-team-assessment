@@ -12,6 +12,7 @@ import shared.Message;
 public class ConnectionPool {
     private List<MessengerHandler> connections = new ArrayList<>();
     public GroupHandler groupHandler = new GroupHandler();
+    public TopicHandler topicHandler = new TopicHandler();
 
     /** Adds a new connection. **/
     public void addConnection(MessengerHandler handler) {
