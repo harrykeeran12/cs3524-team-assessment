@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.HashMap;
+
 import shared.Message;
 
 import java.lang.IndexOutOfBoundsException;
@@ -38,7 +41,8 @@ public class MessengerHandler implements Runnable {
     }
 
     /** Registers a new user, and broadcasts the name to everyone. **/
-    public void registerUser(String username) throws IOException, ClassNotFoundException, ArrayIndexOutOfBoundsException {
+    public void registerUser(String username)
+            throws IOException, ClassNotFoundException, ArrayIndexOutOfBoundsException {
         try {
             this.username = username;
             /* Send a callback, back to the user saying that they have registered. */
@@ -119,9 +123,10 @@ public class MessengerHandler implements Runnable {
             }
             while (true) {
                 Message message = (Message) streamFromClient.readObject();
-                System.out.println(message.toString());
+
                 String keyword = message.getMessageBody().split(" ")[0];
-                if (keyword.equalsIgnoreCase("exit") || keyword.equalsIgnoreCase("logout") || keyword.equalsIgnoreCase("unregister")) {
+                if (keyword.equalsIgnoreCase("exit") || keyword.equalsIgnoreCase("logout")
+                        || keyword.equalsIgnoreCase("unregister")) {
                     /* Send message saying user has been disconnected. */
                     connectionPool.broadcast(
                             new Message(String.format("User %s is being disconnected.", this.username), "[SERVER]"));
@@ -140,30 +145,35 @@ public class MessengerHandler implements Runnable {
                         } else if (args != null && connectionPool.containsForRename(args)) {
                             sendMessageToClient(
                                     new Message("Name already in use, please use another one again.", "[SERVER]"));
-                        } else if (args != null && connectionPool.containsForRename(args)){
-                            sendMessageToClient(new Message("Name already in use, please use another one again.", "[SERVER]"));
-                        } 
+                        } else if (args != null && connectionPool.containsForRename(args)) {
+                            sendMessageToClient(
+                                    new Message("Name already in use, please use another one again.", "[SERVER]"));
+                        }
                     } catch (ArrayIndexOutOfBoundsException e) {
                         System.out.println("Argument for renaming not found.");
                     }
                     // System.out.println("User has been disconnected.");
-                } else if (keyword.equalsIgnoreCase("register")){
-                    try{
+                } else if (keyword.equalsIgnoreCase("register")) {
+                    try {
                         String newUsername = message.getMessageBody().split(" ")[1];
-                        if (newUsername != null){
+                        if (newUsername != null) {
                             this.setClientName(newUsername);
-                            if(connectionPool.containsForRegister(newUsername)){
-                                sendMessageToClient(new Message("This name is already in use, please use another one by typing 'rename username'.", "[SERVER]"));
+                            if (connectionPool.containsForRegister(newUsername)) {
+                                sendMessageToClient(new Message(
+                                        "This name is already in use, please use another one by typing 'rename username'.",
+                                        "[SERVER]"));
                             } else {
-                                System.out.println(String.format("User %s successfully registered and joined the chat.\n", this.username));
-                                this.connectionPool.broadcast(this.getUserMessage(String.format("User %s joined the chat.\n", this.username)));
+                                System.out.println(String.format(
+                                        "User %s successfully registered and joined the chat.\n", this.username));
+                                this.connectionPool.broadcast(this
+                                        .getUserMessage(String.format("User %s joined the chat.\n", this.username)));
                             }
                         }
-                    } catch (ArrayIndexOutOfBoundsException e){
+                    } catch (ArrayIndexOutOfBoundsException e) {
                         System.out.println("Argument for renaming not found.");
                     }
                 } else if (keyword.equalsIgnoreCase("create")) {
-                    System.out.println("Create new group here!");
+                    // System.out.println("Create new group here!");
                     /* Get supplementary arguments that are specified by the user. */
                     String args = message.getMessageBody().split(" ")[1];
                     if (args != null) {
@@ -187,7 +197,7 @@ public class MessengerHandler implements Runnable {
                                     String.format("User %s just joined the group chat %s.", this.username, args),
                                     "[SERVER]"));
                         } catch (Exception e) {
-                            System.out.format("%s could not join the group chat %s.", this.username, args);
+                            System.out.printf("%s could not join the group chat %s.", this.username, args);
                             System.out.println(e.getMessage());
                         }
                     }
@@ -211,15 +221,33 @@ public class MessengerHandler implements Runnable {
                      * user that sent the message is part of.
                      */
                     String messageArray[] = message.getMessageBody().split(" ", 3);
+                    String sender = this.username;
                     String receiver = messageArray[1];
                     String contents = messageArray[2];
                     /* Check if the name is part of the connection pool. */
                     if (!this.username.equalsIgnoreCase(receiver)) {
-                        if (this.connectionPool.containsUsername(receiver)) {
+                        if (this.connectionPool.containsUsername(receiver) == true) {
                             // System.out.println("This name is a valid name.");
                             // sendMessageToClient(new Message(String.format("Sending a message to %s",
                             // name), "[SERVER]"));
                             this.connectionPool.sendToUser(receiver, new Message(contents, this.username));
+                        }
+                        /* Check if the name is a group name. */
+                        else if (this.connectionPool.checkGroupName(receiver) == true) {
+                            try{
+                                Group groupToBroadcast = this.connectionPool.groupHandler.findGroup(receiver);
+                                /* Check if sender is part of group. */
+                                if (groupToBroadcast.checkMembership(sender) == true) {
+                                    groupToBroadcast.broadcastGroup(new Message(contents, sender));
+                                } else {
+                                    sendMessageToClient(new Message("User is not part of the group."));
+                                }
+                               
+
+                            }
+                            catch(Exception e){
+                                 sendMessageToClient(new Message("Error sending a message to the group."));
+                            }
                         } else {
                             sendMessageToClient(new Message("This user does not exist."));
                         }
@@ -229,10 +257,25 @@ public class MessengerHandler implements Runnable {
                     }
 
                 } else if (keyword.equalsIgnoreCase("list")) {
-                    System.out.println("LIST");
-                    sendMessageToClient(new Message(String.format("Connected users: %s\n",
-                            String.join(" ", this.connectionPool.getAllUsernames()))));
+                    // System.out.println("LIST");
+                    ArrayList<String> userList = this.connectionPool.getAllUsernames();
+                    ArrayList<String> groupList = this.connectionPool.getGroupNameAndOccupancy();
+                    if (userList.size() == 0) {
+                        sendMessageToClient(new Message("No users in list."));
+                    } else {
+                        sendMessageToClient(new Message(String.format("Connected users: %s\n",
+                                String.join(" ", userList))));
+                    }
+                    if (groupList.size() == 0) {
+                        sendMessageToClient(new Message("No groups have been created."));
+
+                    } else {
+                        sendMessageToClient(new Message(String.format("Group names: %s",
+                                String.join(" ", groupList))));
+                    }
+
                 } else {
+                    System.out.println(message.toString());
                     this.connectionPool.broadcast(message);
                 }
                 // break;

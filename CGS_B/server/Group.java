@@ -12,7 +12,7 @@ import shared.Message;
  */
 public class Group {
   public String groupName;
-  private ArrayList<MessengerHandler> messengerHandlerList;
+  private ArrayList<MessengerHandler> messengerHandlerList = new ArrayList<MessengerHandler>();
   public Integer currentOccupancy = 0;
 
   public Group(String newGroupName) {
@@ -24,7 +24,7 @@ public class Group {
      * If the username is not in the array list of message handlers, add them to the
      * group.
      */
-    if (!messengerHandlerList.contains(userMessageHandler)) {
+    if (messengerHandlerList.contains(userMessageHandler) == false) {
       messengerHandlerList.add(userMessageHandler);
     }
     this.currentOccupancy += 1;
@@ -35,13 +35,26 @@ public class Group {
      * If the username is in the array list of message handlers, then remove them
      * from the group.
      */
-    if (messengerHandlerList.contains(userMessageHandler)) {
+    if (messengerHandlerList.contains(userMessageHandler) == true) {
       messengerHandlerList.remove(userMessageHandler);
       /* Reduce the current number inside the Group object. */
       if (this.currentOccupancy > 0) {
         this.currentOccupancy -= 1;
       }
     }
+  }
+  /**
+   * Checks the membership of a username in a group.
+   * @param username
+   * @return
+   */
+  public boolean checkMembership(String username) {
+    for (MessengerHandler messengerHandler : messengerHandlerList) {
+      if (messengerHandler.getClientName().equalsIgnoreCase(username)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   public void broadcastGroup(Message newMessage) {

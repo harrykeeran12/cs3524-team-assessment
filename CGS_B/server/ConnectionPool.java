@@ -1,10 +1,11 @@
 package server;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 import shared.Message;
-import server.GroupHandler;
 
 /** This class houses all the current connections of the server. **/
 
@@ -54,10 +55,12 @@ public class ConnectionPool {
     }
 
     /**
-     * Check if a username is connected to a handler. This also checks if a user with a specific name is present.
+     * Check if a username is connected to a handler. This also checks if a user
+     * with a specific name is present.
+     * 
      * @param message
      */
-    public boolean containsUsername(String username){
+    public boolean containsUsername(String username) {
         for (MessengerHandler handler : this.connections) {
             if (username.equalsIgnoreCase(handler.getClientName())) {
                 return true;
@@ -65,11 +68,13 @@ public class ConnectionPool {
         }
         return false;
     }
+
     /**
-     * This method gets all the usernames that are currently connected to the server.
+     * This method gets all the usernames that are currently connected to the
+     * server.
      * 
      */
-    public ArrayList<String> getAllUsernames(){
+    public ArrayList<String> getAllUsernames() {
 
         ArrayList<String> usernameList = new ArrayList<String>(this.connections.size());
         for (MessengerHandler handler : this.connections) {
@@ -79,27 +84,70 @@ public class ConnectionPool {
         }
         return usernameList;
     }
+
+    /**
+     * This method checks if this name is a valid group name.
+     * 
+     * @param groupName
+     * @return
+     */
+    public boolean checkGroupName(String groupName) {
+        if (getAllGroupNames().contains(groupName)) {
+            return true;
+        }
+        return false;
+    }
+
     /**
      * A method to find a user by a username, and return the message handler.
+     * 
      * @param username
      * @return
      */
-    public MessengerHandler findUser(String username){
+    public MessengerHandler findUser(String username) {
         for (MessengerHandler messengerHandler : connections) {
-            if (messengerHandler.getClientName().equalsIgnoreCase(username)){
+            if (messengerHandler.getClientName().equalsIgnoreCase(username)) {
                 return messengerHandler;
             }
         }
         return null;
     }
 
-    public boolean sendToUser(String username, Message message){
+    /**
+     * This method sends a specific message to a specific user.
+     * 
+     * @param username
+     * @param message
+     * @return
+     */
+    public boolean sendToUser(String username, Message message) {
         MessengerHandler recipient = findUser(username);
         if (recipient != null) {
             recipient.sendMessageToClient(message);
             return true;
         }
         return false;
+    }
+
+    /** This method gets all the group names. */
+    public ArrayList<String> getAllGroupNames() {
+        Set<String> groupNameSet = this.groupHandler.getGroupNames();
+        ArrayList<String> groupList = new ArrayList<String>();
+        groupList.addAll(groupNameSet);
+        return groupList;
+    }
+
+    /**
+     * This function returns the occupancy of the groups, and the group name.
+     */
+    public ArrayList<String> getGroupNameAndOccupancy() {
+        ArrayList<String> groupList = new ArrayList<String>();
+        for (Group group : this.groupHandler.groupHashMap.values()) {
+            groupList.add(
+                    String.format("%s \t occupancy[%s]\n", group.groupName, String.valueOf(group.currentOccupancy)));
+        }
+
+        return groupList;
     }
 
     /**

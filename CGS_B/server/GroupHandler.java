@@ -11,7 +11,7 @@ import java.util.Set;
  */
 public class GroupHandler {
 
-  private HashMap<String, Group> groupHashMap = new HashMap<String,Group>();
+  protected HashMap<String, Group> groupHashMap = new HashMap<String, Group>();
 
   /**
    * Allow a user to create a new group.
@@ -25,6 +25,7 @@ public class GroupHandler {
     if (groupHashMap.containsKey(groupName) == false) {
       Group newGroup = new Group(groupName);
       groupHashMap.put(groupName, newGroup);
+      System.out.printf("Created new group with name %s \n", groupName);
       return newGroup;
     } else {
       throw new Exception("Group already exists with that name.");
@@ -41,7 +42,7 @@ public class GroupHandler {
    */
   public Group joinGroup(String groupName, MessengerHandler userMessengerHandler) throws Exception {
 
-    if (groupHashMap.containsKey(groupName)) {
+    if (groupHashMap.containsKey(groupName) && userMessengerHandler != null) {
       Group newGroupToBeJoined = groupHashMap.get(groupName);
       newGroupToBeJoined.joinGroup(userMessengerHandler);
       return newGroupToBeJoined;
@@ -83,7 +84,21 @@ public class GroupHandler {
       throw new Exception("Group was unable to be removed.");
     }
   }
+/**
+ * This finds a group. 
+ * @param groupName
+ * @return
+ * @throws Exception
+ */
+  public Group findGroup(String groupName) throws Exception{
+    if (groupHashMap.containsKey(groupName)) {
+      Group newGroupToBeJoined = groupHashMap.get(groupName);
+      return newGroupToBeJoined;
 
+    } else {
+      throw new Exception("Specified group cannot be found.");
+    }
+  }
   /**
    * This function returns all the names of the groups that have currently been
    * created.
@@ -92,4 +107,5 @@ public class GroupHandler {
     return groupHashMap.keySet();
   }
 
+ 
 }
