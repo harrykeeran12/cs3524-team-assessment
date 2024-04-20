@@ -27,27 +27,38 @@ public class Client {
     private ObjectOutputStream outputStreamToMessenger;
     private Boolean connected;
 
-    /** This is the constructor for the client. */
+    /**
+     * This is the constructor for the client.
+     * @param host
+     * @param port
+     */
     public Client(String host, int port) {
         this.host = host;
         this.port = port;
-        // this.socket = null;
-        // this.username = null;
-        // this.listenerThread = null;
-        // this.scanner = null;
-        // this.inputStreamFromMessenger = null;
-        // this.outputStreamToMessenger = null;
-        // this.connected = null;
     }
 
+    /**
+     * Returns an output stream from the client to the server
+     * @return an ObjectOutputStream connected to the socket's output stream
+     * @throws IOException
+     */
     private ObjectOutputStream getStreamToMessenger() throws IOException {
         return new ObjectOutputStream(this.socket.getOutputStream());
     }
 
+    /**
+     * Returns an input stream from the server to the client
+     * @return an ObjectInputStream connected to the socket's input stream
+     * @throws IOException
+     */
     private ObjectInputStream getStreamFromMessenger() throws IOException {
         return new ObjectInputStream(this.socket.getInputStream());
     }
 
+    /**
+     * Returns the client's message from the terminal
+     * @return String 
+     */
     private String getMessageFromTerminal() {
         System.out.printf("[%s] Write your message here: \n", this.username);
         String message = null;
@@ -62,8 +73,12 @@ public class Client {
         return message;
     }
 
+    /**
+     * Connects the client to the server by creating a socket with host and port number
+     * @throws IOException
+     * @throws UnknownHostException
+     */
     private void connect() {
-        /* Connect the client to the server */
         try {
             this.socket = new Socket(this.host, this.port);
             this.outputStreamToMessenger = this.getStreamToMessenger();
@@ -79,13 +94,14 @@ public class Client {
         }
     }
 
-    private void registerUser(String username) {
-        // test if this username already registered? add this new username to database?
+    /**
+     * Registers a new user
+     * @param username
+     */
+    private void registerUser(String username){
         if (this.connected == true) {
-
             try {
                 this.username = username;
-                /* This is where you would check where the username is entered. */
                 String callback = (String) this.inputStreamFromMessenger.readObject();
                 System.out.println(callback);
             } catch (IOException e) {
@@ -99,8 +115,11 @@ public class Client {
         }
     }
 
-
-    /**This method enables users to change their usernames */
+    /**
+     * This method enables users to change their usernames 
+     * @param args
+     * @throws ArrayIndexOutOfBoundsException
+     */
     private void rename(String args) throws ArrayIndexOutOfBoundsException {
         if (args != null) {
             this.username=args;
@@ -132,10 +151,11 @@ public class Client {
         this.listenerThread.setDaemon(true);
         // keeps reading from server and print out the messages from other users
         this.listenerThread.start();
-        // System.out.println("\t Started daemon thread.");
-
     }
 
+    /**
+     * This is supposed to run a client and check if a keyword is used by the client
+     */
     public void run() {
         this.connect(); // connection to server
         if (this.connected == true) {
@@ -156,8 +176,6 @@ public class Client {
             } catch (ArrayIndexOutOfBoundsException e){
                 System.out.println("Argument for renaming not found, please try again.");
             }
-            
-
             this.listenToServer();
             while (this.connected) {
                 String message = this.getMessageFromTerminal();

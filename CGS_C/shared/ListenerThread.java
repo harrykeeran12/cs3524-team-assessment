@@ -11,11 +11,20 @@ public class ListenerThread extends Thread{
   private ObjectInputStream inputStream;
   private boolean connectionStatus;
 
+  /**
+   * Constructs a new listener thread
+   * @param newInputStream
+   * @param connected
+   */
   public ListenerThread(ObjectInputStream newInputStream, boolean connected){
     this.inputStream = newInputStream;
     this.connectionStatus = connected;
     // System.out.println("Created a new listener thread.");
   }
+
+  /**
+   * Runs a listener thread
+   */
   @Override
   public void run() {
 

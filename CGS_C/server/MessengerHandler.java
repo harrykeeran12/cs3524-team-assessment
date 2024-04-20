@@ -24,7 +24,9 @@ public class MessengerHandler implements Runnable {
     /**
      * MessengerHandler constructor, which provides an interface for a client to
      * handle a message.
-     **/
+     * @param socket
+     * @param connectionPool
+     */
     public MessengerHandler(Socket socket, ConnectionPool connectionPool) {
         this.socket = socket;
         this.connectionPool = connectionPool;
@@ -37,7 +39,13 @@ public class MessengerHandler implements Runnable {
         }
     }
 
-    /** Registers a new user, and broadcasts the name to everyone. **/
+    /**
+     * Registers a new user, and broadcasts the name to everyone.
+     * @param username
+     * @throws IOException
+     * @throws ClassNotFoundException
+     * @throws ArrayIndexOutOfBoundsException
+     */
     public void registerUser(String username) throws IOException, ClassNotFoundException, ArrayIndexOutOfBoundsException {
         try {
             this.username = username;
@@ -51,18 +59,22 @@ public class MessengerHandler implements Runnable {
     }
 
     /**
-     * Get the client's username.
+     * Gets the client's username.
      * 
      */
     public String getClientName() {
         return this.username;
     }
 
+    /**
+     * Sets the ckient's username
+     * @param newUsername
+     */
     public void setClientName(String newUsername) {
         this.username = newUsername;
     }
 
-    /** Get an instance of the client's socket */
+    /** Gets an instance of the client's socket */
     public Socket getClientSocket() {
         return this.socket;
     }
@@ -77,7 +89,7 @@ public class MessengerHandler implements Runnable {
         return new Message(messageBody, this.username);
     }
 
-    /** Close the connection with the server. **/
+    /** Closes the connection with the server. **/
     private void close() {
         this.connectionPool.removeUser(this);
         try {
@@ -91,7 +103,10 @@ public class MessengerHandler implements Runnable {
         }
     }
 
-    /** Send a message specifically to the client. **/
+    /**
+     * Sends a message specifically to the client.
+     * @param message
+     */
     public void sendMessageToClient(Message message) {
         try {
             streamToClient.writeObject(message);
@@ -114,12 +129,10 @@ public class MessengerHandler implements Runnable {
                     String newUsername = msg.split(" ")[1];
                     if (!connectionPool.containsUsername(newUsername)){
                         this.registerUser(newUsername);
-                    }
-                    else sendMessageToClient(new Message("Name is already in use, please use another one by typing 'rename username'.", "[SERVER]"));
+                    } else sendMessageToClient(new Message("Name is already in use, please use another one.", "[SERVER]"));
                 } catch (ArrayIndexOutOfBoundsException e){
                     System.out.println("Argument for renaming not found, waiting for client to try again...");
-                }
-                
+                }  
             }
             while (true) {
                 Message message = (Message) streamFromClient.readObject();
@@ -136,7 +149,7 @@ public class MessengerHandler implements Runnable {
                         String newUsername = message.getMessageBody().split(" ")[1];
                         if (newUsername != null && !connectionPool.containsUsername(newUsername)){
                             setClientName(newUsername);
-                            sendMessageToClient(new Message("You successfully registered and joined the chat.", "[SERVER]"));
+                            sendMessageToClient(new Message("You have successfully registered and joined the chat.", "[SERVER]"));
                             this.connectionPool.broadcast(this.getUserMessage(String.format("User %s joined the chat.\n", this.username)));
                             System.out.println(String.format("User %s successfully registered and joined the chat.\n", this.username));
                         }else {
@@ -161,7 +174,6 @@ public class MessengerHandler implements Runnable {
                     } catch (ArrayIndexOutOfBoundsException e) {
                         System.out.println("Argument for renaming not found.");
                     }
-                    // System.out.println("User has been disconnected.");
                 } else {
                     connectionPool.broadcast(message);
                 }
