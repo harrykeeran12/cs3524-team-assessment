@@ -43,7 +43,7 @@ public class ConnectionPool {
     /** Checks if a username is already being used when renaming. **/
     public boolean containsForRename(String username){
         for (MessengerHandler handler : this.connections){
-            if (handler.getClientName().equals(username)){
+            if (handler.getClientName().equalsIgnoreCase(username)){
                 return true;
             }
         }

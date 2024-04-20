@@ -38,7 +38,7 @@ public class MessengerHandler implements Runnable {
     }
 
     /** Registers a new user, and broadcasts the name to everyone. **/
-    public void registerUser(String username) throws IOException, ClassNotFoundException {
+    public void registerUser(String username) throws IOException, ClassNotFoundException, ArrayIndexOutOfBoundsException {
         try {
             this.username = username;
             /* Send a callback, back to the user saying that they have registered. */
@@ -110,11 +110,16 @@ public class MessengerHandler implements Runnable {
             this.streamToClient.writeObject("Please first register by typing 'register username'.");
             String msg = (String) this.streamFromClient.readObject();
             if (msg.split(" ")[0].equals("register")) {
-                String newUsername = msg.split(" ")[1];
-                this.registerUser(newUsername);
-                if (connectionPool.containsForRegister(newUsername)){
-                    sendMessageToClient(new Message("This name is already in use, please use another one by typing 'rename username'.", "[SERVER]"));
+                try{
+                    String newUsername = msg.split(" ")[1];
+                    this.registerUser(newUsername);
+                    if (connectionPool.containsForRegister(newUsername)){
+                        sendMessageToClient(new Message("Name is already in use, please use another one by typing 'rename username'.", "[SERVER]"));
+                    }
+                } catch (ArrayIndexOutOfBoundsException e){
+                    System.out.println("Argument for renaming not found, waiting for client to try again...");
                 }
+                
             }
             while (true) {
                 Message message = (Message) streamFromClient.readObject();
@@ -126,6 +131,21 @@ public class MessengerHandler implements Runnable {
                             new Message(String.format("User %s is being disconnected.", this.username), "[SERVER]"));
                     System.out.println(String.format("User %s is being disconnected.", this.username));
                     break;
+                } else if (keyword.equalsIgnoreCase("register")){
+                    try{
+                        String newUsername = message.getMessageBody().split(" ")[1];
+                        if (newUsername != null){
+                            this.setClientName(newUsername);
+                            if(connectionPool.containsForRegister(newUsername)){
+                                sendMessageToClient(new Message("This name is already in use, please use another one by typing 'rename username'.", "[SERVER]"));
+                            } else {
+                                System.out.println(String.format("User %s successfully registered and joined the chat.\n", this.username));
+                                this.connectionPool.broadcast(this.getUserMessage(String.format("User %s joined the chat.\n", this.username)));
+                            }
+                        }
+                    } catch (ArrayIndexOutOfBoundsException e){
+                        System.out.println("Argument for renaming not found.");
+                    }
                 } else if (keyword.equalsIgnoreCase("rename")) {
                     /* Send message saying user is going to be renamed. */
                     String oldUsername = this.username;
@@ -136,15 +156,10 @@ public class MessengerHandler implements Runnable {
                                     String.format("User %s is being renamed to %s.", oldUsername, args),
                                     "[SERVER]"));
                             setClientName(args);
-                        }else if (args != null && connectionPool.containsForRename(args)){
+                        } else if (args != null && connectionPool.containsForRename(args)){
                             sendMessageToClient(new Message("Name already in use, please use another one again.", "[SERVER]"));
-                        } else {
-                            /*Case when args == null */
-                            sendMessageToClient(new Message("Unable to complete renaming.", "[SERVER]"));
-                        }
-
-                    } catch (IndexOutOfBoundsException e) {
-                        // TODO: handle exception
+                        } 
+                    } catch (ArrayIndexOutOfBoundsException e) {
                         System.out.println("Argument for renaming not found.");
                     }
                     // System.out.println("User has been disconnected.");

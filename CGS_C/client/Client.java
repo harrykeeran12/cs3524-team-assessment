@@ -101,16 +101,11 @@ public class Client {
 
 
     /**This method enables users to change their usernames */
-    private void rename(String args) {
-        try{
-            if (args != null) {
-                this.username=args;
-            } else {
-                System.out.println("Failed renaming");
-            }
-        } catch (IndexOutOfBoundsException e) {
-            // TODO: handle exception
-            System.out.println("Argument for renaming not found.");
+    private void rename(String args) throws ArrayIndexOutOfBoundsException {
+        if (args != null) {
+            this.username=args;
+        } else {
+            System.out.println("Failed renaming");
         }
     }
 
@@ -155,9 +150,11 @@ public class Client {
                     this.registerUser(msg.split(" ")[1]);
                 }
             }catch (ClassNotFoundException e){
-                System.out.println("Failed registering, the message from the server has not been received properly.");
+                System.out.println("Failed registering, class not found.");
             } catch (IOException e) {
                 System.out.println("I/O error while registering.");
+            } catch (ArrayIndexOutOfBoundsException e){
+                System.out.println("Argument for renaming not found, please try again.");
             }
             
 
@@ -173,8 +170,18 @@ public class Client {
                     }else if (message.equalsIgnoreCase("unregister") || message.split("\\s+")[0].equalsIgnoreCase("unregister")){
                         this.connected = false;
                     } else if (message.equalsIgnoreCase("rename") || message.split("\\s+")[0].equalsIgnoreCase("rename")){
-                        String args = message.split(" ")[1];
-                        this.rename(args);
+                        try {
+                            String args = message.split(" ")[1];
+                            this.rename(args);
+                        } catch (ArrayIndexOutOfBoundsException e){
+                            System.out.println("Argument for renaming not found, please try again.");
+                        }
+                    } else if (message.split("\\s+")[0].equalsIgnoreCase("register")){
+                        try {
+                            this.rename(message.split(" ")[1]);
+                        } catch (ArrayIndexOutOfBoundsException e){
+                            System.out.println("Argument for renaming not found, please try again.");
+                        }
                     }
                 }
                 try {
