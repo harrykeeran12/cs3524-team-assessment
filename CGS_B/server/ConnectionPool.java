@@ -28,7 +28,7 @@ public class ConnectionPool {
     public boolean containsForRegister(String username) {
         int occurrence = 0;
         for (MessengerHandler handler : this.connections) {
-            if (handler.getClientName().equals(username)) {
+            if (handler.getClientName().equalsIgnoreCase(username)) {
                 occurrence++;
             }
         }

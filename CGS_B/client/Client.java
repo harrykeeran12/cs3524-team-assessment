@@ -62,8 +62,18 @@ public class Client {
             }else if (message.equalsIgnoreCase("logout") || message.split("\\s+")[0].equalsIgnoreCase("logout")) {
                 this.connected = false;
             } else if (message.equalsIgnoreCase("rename") || message.split("\\s+")[0].equalsIgnoreCase("rename")){
-                String args = message.split(" ")[1];
-                this.rename(args);
+                try {
+                    String args = message.split(" ")[1];
+                    this.rename(args);
+                } catch (ArrayIndexOutOfBoundsException e){
+                    System.out.println("Argument for renaming not found, please try again.");
+                }
+            } else if (message.split("\\s+")[0].equalsIgnoreCase("register")){
+                try {
+                    this.rename(message.split(" ")[1]);
+                } catch (ArrayIndexOutOfBoundsException e){
+                    System.out.println("Argument for renaming not found, please try again.");
+                }
             }
         } catch (NoSuchElementException e) {
             // When the client exit with CTRL-C, this catch avoids error message and close
@@ -110,22 +120,12 @@ public class Client {
     }
 
     /**This method enables users to change their usernames */
-    private void rename(String args) {
-        try{
-            if (args != null) {
-                this.username=args;
-            } else {
-                System.out.println("Failed renaming");
-            }
-        } catch (IndexOutOfBoundsException e) {
-            // TODO: handle exception
-            System.out.println("Argument for renaming not found.");
+    private void rename(String args) throws ArrayIndexOutOfBoundsException{
+        if (args != null) {
+            this.username=args;
+        } else {
+            System.out.println("Failed renaming");
         }
-    }
-
-    /** For a user to login, they must already be in the database. */
-    private void loginUser() {
-        // if username already registered in the database, then connection
     }
 
     /**
@@ -169,9 +169,11 @@ public class Client {
                     this.registerUser(msg.split(" ")[1]);
                 }
             }catch (ClassNotFoundException e){
-                System.out.println("error");
+                System.out.println("Failed registering, class not found.");
             } catch (IOException e) {
-                System.out.println("error");
+                System.out.println("I/O error while registering.");
+            }catch (ArrayIndexOutOfBoundsException e){
+                System.out.println("Argument for renaming not found, please try again.");
             }
             this.listenToServer();
             while (this.connected) {
@@ -190,7 +192,5 @@ public class Client {
             }
             this.logoutUser();
         }
-        // this.loginUser();
-
     }
 }

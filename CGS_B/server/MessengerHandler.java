@@ -38,7 +38,7 @@ public class MessengerHandler implements Runnable {
     }
 
     /** Registers a new user, and broadcasts the name to everyone. **/
-    public void registerUser(String username) throws IOException, ClassNotFoundException {
+    public void registerUser(String username) throws IOException, ClassNotFoundException, ArrayIndexOutOfBoundsException {
         try {
             this.username = username;
             /* Send a callback, back to the user saying that they have registered. */
@@ -114,14 +114,14 @@ public class MessengerHandler implements Runnable {
                 this.registerUser(newUsername);
                 if (connectionPool.containsForRegister(newUsername)) {
                     sendMessageToClient(new Message(
-                            "This name is already in use, please use another one by typing 'rename username'"));
+                            "Name is already in use, please use another one by typing 'rename username'", "[SERVER]"));
                 }
             }
             while (true) {
                 Message message = (Message) streamFromClient.readObject();
                 System.out.println(message.toString());
                 String keyword = message.getMessageBody().split(" ")[0];
-                if (keyword.equalsIgnoreCase("exit")) {
+                if (keyword.equalsIgnoreCase("exit") || keyword.equalsIgnoreCase("logout") || keyword.equalsIgnoreCase("unregister")) {
                     /* Send message saying user has been disconnected. */
                     connectionPool.broadcast(
                             new Message(String.format("User %s is being disconnected.", this.username), "[SERVER]"));
@@ -140,14 +140,28 @@ public class MessengerHandler implements Runnable {
                         } else if (args != null && connectionPool.containsForRename(args)) {
                             sendMessageToClient(
                                     new Message("Name already in use, please use another one again.", "[SERVER]"));
-                        } else {
-                            sendMessageToClient(new Message("Unable to complete renaming.", "[SERVER]"));
-                        }
-
-                    } catch (IndexOutOfBoundsException e) {
+                        } else if (args != null && connectionPool.containsForRename(args)){
+                            sendMessageToClient(new Message("Name already in use, please use another one again.", "[SERVER]"));
+                        } 
+                    } catch (ArrayIndexOutOfBoundsException e) {
                         System.out.println("Argument for renaming not found.");
                     }
                     // System.out.println("User has been disconnected.");
+                } else if (keyword.equalsIgnoreCase("register")){
+                    try{
+                        String newUsername = message.getMessageBody().split(" ")[1];
+                        if (newUsername != null){
+                            this.setClientName(newUsername);
+                            if(connectionPool.containsForRegister(newUsername)){
+                                sendMessageToClient(new Message("This name is already in use, please use another one by typing 'rename username'.", "[SERVER]"));
+                            } else {
+                                System.out.println(String.format("User %s successfully registered and joined the chat.\n", this.username));
+                                this.connectionPool.broadcast(this.getUserMessage(String.format("User %s joined the chat.\n", this.username)));
+                            }
+                        }
+                    } catch (ArrayIndexOutOfBoundsException e){
+                        System.out.println("Argument for renaming not found.");
+                    }
                 } else if (keyword.equalsIgnoreCase("create")) {
                     System.out.println("Create new group here!");
                     /* Get supplementary arguments that are specified by the user. */
