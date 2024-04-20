@@ -7,28 +7,50 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.NoSuchElementException;
 
+/** This class houses the port, server socket, and connection pool. **/
 public class MessengerServer{
 
     private int port;
     private ServerSocket serverSocket;
 
+    /**
+     * Constructor to add the items to the socket.
+     * @param port
+     */
     public MessengerServer(int port){
         this.port = port;
         this.serverSocket = null;
     }
 
+    /**
+     * This returns a new output stream.
+     * @param socket
+     * @return
+     * @throws IOException
+     */
     private ObjectOutputStream getStreamToClient(Socket socket) throws IOException {
         return new ObjectOutputStream(socket.getOutputStream());
     }
 
+    /**
+     * This returns a new input stream.
+     * @param socket
+     * @return
+     * @throws IOException
+     */
     private ObjectInputStream getStreamFromClient(Socket socket) throws IOException{
         return new ObjectInputStream(socket.getInputStream());
     }
 
+    /**
+     * This creates a new server socket.
+     * @throws IOException
+     */
     public void connect() throws IOException{
         this.serverSocket = new ServerSocket(this.port);
     }
 
+    /** This is supposed to run the server. */
     public void run() {
         System.out.println("Server is starting...");
 
