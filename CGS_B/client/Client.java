@@ -35,13 +35,6 @@ public class Client {
     public Client(String host, int port) {
         this.host = host;
         this.port = port;
-        // this.socket = null;
-        // this.username = null;
-        // this.listenerThread = null;
-        // this.scanner = null;
-        // this.inputStreamFromMessenger = null;
-        // this.outputStreamToMessenger = null;
-        // this.connected = null;
     }
 
     /**
