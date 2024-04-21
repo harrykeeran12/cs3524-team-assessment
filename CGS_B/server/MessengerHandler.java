@@ -59,7 +59,7 @@ public class MessengerHandler implements Runnable {
                 this.streamToClient.writeObject(String.format("User %s successfully registered!", this.username));
                 System.out.println(String.format("User %s joined the chat.\n", this.username));
                 this.connectionPool.broadcast(this.getUserMessage(String.format("User %s joined the chat.\n", this.username)));
-            }else {
+            } else {
                 this.streamToClient.writeObject("Name already in use, please try again.");
             }
         } catch (IOException e) {
