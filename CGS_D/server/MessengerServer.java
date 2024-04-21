@@ -1,4 +1,4 @@
-package CGS_D.server;
+package server;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
