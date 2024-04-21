@@ -169,6 +169,7 @@ public class Client {
                 if (msg.split(" ")[0].equals("register")){
                     this.registerUser(msg.split(" ")[1]);
                 }
+                
             }catch (ClassNotFoundException e){
                 System.out.println("Failed registering, class not found.");
             } catch (IOException e) {
