@@ -21,8 +21,6 @@ public class MessengerServer {
      */
     public MessengerServer(int port) {
         this.port = port;
-        // this.serverSocket = null;
-        // this.connectionPool = null;
     }
 
     /**

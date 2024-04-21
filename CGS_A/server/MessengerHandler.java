@@ -50,14 +50,19 @@ public class MessengerHandler implements Runnable {
     public void registerUser(String username)
             throws IOException, ClassNotFoundException, ArrayIndexOutOfBoundsException {
         try {
-            this.username = username;
-            /* Send a callback, back to the user saying that they have registered. */
-            this.streamToClient.writeObject(String.format("User %s successfully registered!", this.username));
-            System.out.println(String.format("User: %s joined the chat.\n", this.username));
+            if (username!= null && !connectionPool.containsUsername(username)){
+                /*Checks if the username entered by client is unique. */
+                this.username = username;
+                /* Send a callback, back to the user saying that they have registered. */
+                this.streamToClient.writeObject(String.format("User %s successfully registered!", this.username));
+                System.out.println(String.format("User %s joined the chat.\n", this.username));
+                this.connectionPool.broadcast(this.getUserMessage(String.format("User %s joined the chat.\n", this.username)));
+            } else {
+                this.streamToClient.writeObject("Name already in use, please try again.");
+            }
         } catch (IOException e) {
             System.out.println("User " + this.username + "failed to register.");
         }
-        this.connectionPool.broadcast(this.getUserMessage(String.format("User: %s joined the chat.\n", this.username)));
     }
 
     /**
@@ -130,14 +135,12 @@ public class MessengerHandler implements Runnable {
             this.streamToClient.writeObject("Please first register by typing 'register username'.");
             String msg = (String) this.streamFromClient.readObject();
             if (msg.split(" ")[0].equals("register")) {
-                String newUsername = msg.split(" ")[1];
-                if (!connectionPool.containsUsername(newUsername)){
-                    /*Checks if the username entered by client is unique. */
+                try {
+                    String newUsername = msg.split(" ")[1];
                     this.registerUser(newUsername);
-                } else {
-                    sendMessageToClient(new Message(
-                            "Name is already in use, please use another one by typing 'rename username'", "[SERVER]"));
-                }
+                } catch (ArrayIndexOutOfBoundsException e){
+                    System.out.println("Argument for renaming not found, waiting for client to try again...");
+                } 
             }
             while (true) {
                 Message message = (Message) streamFromClient.readObject();
@@ -172,6 +175,9 @@ public class MessengerHandler implements Runnable {
                     try {
                         String newUsername = message.getMessageBody().split(" ")[1];
                         if (newUsername != null && !connectionPool.containsUsername(newUsername)) {
+                            /* Using setClientName() instead of registerUsername() because registerUsername() sends 
+                             * a String to the client that cannot be casted into a Message in the Client class.
+                             */
                             this.setClientName(newUsername);
                             sendMessageToClient(new Message("You have successfully registered and joined the chat.", "[SERVER]"));
                             this.connectionPool.broadcast(this.getUserMessage(String.format("User %s joined the chat.\n", this.username)));
