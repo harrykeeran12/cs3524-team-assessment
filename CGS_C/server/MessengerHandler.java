@@ -61,7 +61,6 @@ public class MessengerHandler implements Runnable {
         } catch (IOException e) {
             System.out.println("User " + this.username + "failed to register.");
         }
-        // this.connectionPool.broadcast(this.getUserMessage(String.format("User %s joined the chat.\n", this.username)));
     }
 
     /**
@@ -131,7 +130,6 @@ public class MessengerHandler implements Runnable {
             this.streamToClient.writeObject("Please first register by typing 'register username'.");
             String msg = (String) this.streamFromClient.readObject();
             if (msg.split(" ")[0].equals("register")) {
-                // System.out.println("error while registering");
                 try{
                     String newUsername = msg.split(" ")[1];
                     this.registerUser(newUsername);
