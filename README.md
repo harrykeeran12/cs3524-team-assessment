@@ -6,9 +6,7 @@ Team assessment for Distributed Systems &amp; Security.
 
 ## Instructions
 
-Compile each section with `make compile[SECTION_LETTER]`. Example: `make compileD`.
-
-Clean up each directory of the class files with `make clean[SECTION_LETTER]`. Example `make cleanD`.
+Each folder contains a Makefile, which has commands to run the server and the client, as well as commands to clean up the workspace.
 
 ---
 
@@ -23,42 +21,42 @@ Clean up each directory of the class files with `make clean[SECTION_LETTER]`. Ex
 
 ## C3-C1
 
-- [ ]  Develop a simple command language for clients to register with the server. This will require a check to see if a message is a keyword of a command language, using `java.util.Scanner`.
+- [x]  Develop a simple command language for clients to register with the server. This will require a check to see if a message is a keyword of a command language, using `java.util.Scanner`.
 - [x]  A user of the client application can type messages on the command line, which is sent by the server **to all** the clients.
 
 ## B3-B1
 
-- [ ]  The server can handle
-  - [ ]  Socket communication between two clients.
-  - [ ]  User group communication
-- [ ]  Users must be able to `CREATE`, `JOIN`, `LEAVE` + `REMOVE` groups.
-- [ ]  The `SEND` command must be able to send to a specific group or to send to a specific user.
+- [x]  The server can handle
+  - [x]  Socket communication between two clients.
+  - [x]  User group communication
+- [x]  Users must be able to `CREATE`, `JOIN`, `LEAVE` + `REMOVE` groups.
+- [x]  The `SEND` command must be able to send to a specific group or to send to a specific user.
 
 ## A5-A1
 
-- [ ]  There should be **specific topics** of interest, that users want to sign up to.
-- [ ]  Each user can subscribe or unsubscribe from a topic.
+- [x]  There should be **specific topics** of interest, that users want to sign up to.
+- [x]  Each user can subscribe or unsubscribe from a topic.
 
 ## Running the program
 
 **Cloning the repository**
-- Make sure you have github installed on your device or have access through it on your web browser. 
+- Make sure you have Git installed on your device or have access through it on your web browser. 
 - Open the source code you want to run and press `< > Code`. 
 - Copy the URL for the code.
-- Open your IDE, Visual Studio IDE  is recommended.
+- Open your IDE, the Visual Studio Code IDE  is recommended.
 - Write the `git clone` command followed by the URL you have copied from github, this clones the repository onto the local machine.
 
-**Downloading extension packs**
+**Downloading the extension packs**
 
-- You may have to install some extensions onto your IDE, for this specific program you will need Code runner for Java, Debugger for Java code and Makefile.
+- You may have to install some extensions onto your IDE, for this specific program you will need the code runner for Java, Debugger for Java code and Makefile extensions(if on MacOS/Linux)
 
 **Run the code**
 
 - Go into the `RunMessenger` file and press `run` 
 - Then go into `RunClient` file and press run
 - You will then see prompts in your terminal, you can follow these prompts and view your messages in the terminal 
-- You can add another client but simply going into `RunClient` file again and pressing run 
+- You can add another client but simply going into `RunClient` file again and pressing the Run button.
 
 **Exit**
 
-- All you have to do for this is `CTRL+C` or `kill` the program by `CTRL + SHIFT + DEL`
+- To exit the server and the client programs, you use `CTRL+C`.
