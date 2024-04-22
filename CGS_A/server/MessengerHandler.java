@@ -232,7 +232,19 @@ public class MessengerHandler implements Runnable {
                             System.out.println(e.getMessage());
                         }
                     }
-
+                } else if (keyword.equalsIgnoreCase("remove")) {
+                    String args = message.getMessageBody().split(" ")[1];
+                    if (args != null) {
+                        try {
+                            this.connectionPool.groupHandler.removeGroup(args);
+                            connectionPool.broadcast(new Message(
+                                    String.format("User %s just removed the group %s.", this.username, args),
+                                    "[SERVER]"));
+                        } catch (Exception e) {
+                            System.out.format("Problem when removing the group chat %s.", args);
+                            System.out.println(e.getMessage());
+                        }
+                    }
                 } else if (keyword.equalsIgnoreCase("send")) {
                     /*
                      * This function sends a message either to another user or a group name that the
