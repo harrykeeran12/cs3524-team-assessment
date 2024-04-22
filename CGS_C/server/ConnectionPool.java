@@ -16,7 +16,6 @@ public class ConnectionPool {
      */
     public void addConnection(MessengerHandler handler) {
         System.out.println("\t [SERVER]: Added a new connection to the handler.");
-        System.out.println(String.format("NEW CONNECTION ADDED %s", handler.getClientName()));
         connections.add(handler);
     }
 
